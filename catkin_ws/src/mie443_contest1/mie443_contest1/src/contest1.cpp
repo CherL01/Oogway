@@ -8,6 +8,7 @@
 #include <cmath>
 
 #include <chrono>
+#include <thread>
 
 #include <nav_msgs/Odometry.h>
 #include <tf/transform_datatypes.h>
@@ -27,9 +28,9 @@ uint8_t bumper[3] = {kobuki_msgs::BumperEvent::RELEASED, kobuki_msgs::BumperEven
 float minLaserDist = std::numeric_limits<float>::infinity();
 int32_t nLasers=0, desiredNLasers=0, desiredAngle=5;
 
-//uint8_t leftState = bumper[kobuki_msgs::BumperEvent::LEFT];
-//uint8_t centerState = bumper[kobuki_msgs::BumperEvent::CENTER];
-//uint8_t rightState = bumper[kobuki_msgs::BumperEvent::RIGHT];
+// uint8_t leftState = bumper[kobuki_msgs::BumperEvent::LEFT];
+// uint8_t centerState = bumper[kobuki_msgs::BumperEvent::CENTER];
+// uint8_t rightState = bumper[kobuki_msgs::BumperEvent::RIGHT];
 
 void bumperCallback(const kobuki_msgs::BumperEvent::ConstPtr& msg)
 {
@@ -70,8 +71,6 @@ void odomCallback (const nav_msgs::Odometry::ConstPtr& msg)
 int main(int argc, char **argv)
 {
 
-    ROS_INFO("Position: (%f, %f) Orientation: %f degrees Range: %f", posX, posY, yaw*180/pi, maxLaserRange);
-
     ros::init(argc, argv, "maze_explorer");
     ros::NodeHandle nh;
 
@@ -98,7 +97,6 @@ int main(int argc, char **argv)
 
     while(ros::ok() && secondsElapsed <= 480) {
         ros::spinOnce();
-        //fill with your code
         
         bool any_bumper_pressed = false;
         for (uint32_t b_idx = 0; b_idx < N_BUMPER; ++b_idx) {
@@ -106,23 +104,68 @@ int main(int argc, char **argv)
         }
 
         //Control logic after bumpers are being pressed
-        if (posX < 0.5 && yaw < M_PI / 12 && !any_bumper_pressed) {
-            angular = 0.0;
-            linear = 0.2;
+        ROS_INFO("Position: (%f, %f) Orientation: %f degrees Range: %f", posX, posY, RAD2DEG(yaw), minLaserDist);
+
+        if (any_bumper_pressed) {
+            ROS_INFO("bumper pressed, too close!");
+            angular = M_PI / 12;
+            linear = 0.01;
         }
 
-        else if (posX > 0.5 && yaw < M_PI / 12 && !any_bumper_pressed) {
-            angular = M_PI / 6;
+        else if (minLaserDist < 0.7) {
+            ROS_INFO("laser distance < 0.7m");
             linear = 0.0;
+            angular = M_PI / 2;
+            std::this_thread::sleep_for(std::chrono::milliseconds(1000));
         }
 
         else {
+            ROS_INFO("cruising");
+            linear = 0.25;
             angular = 0.0;
-            linear = 0.0;
-            break;
-        } 
+        }
 
-        
+        // if (posX < 0.5 && yaw < M_PI / 12 && !any_bumper_pressed && minLaserDist > 0.7) {
+        //     ROS_INFO("in first if statement");
+        //     angular = 0.0;
+        //     linear = 0.1;
+        // }
+
+        // else if (posX > 0.5 && yaw < M_PI / 2 && !any_bumper_pressed && minLaserDist > 0.5) {
+        //     ROS_INFO("in first elif statement");
+        //     angular = M_PI / 6;
+        //     linear = 0.0;
+        // }
+
+        // else if (minLaserDist > 1. && !any_bumper_pressed) {
+        //     ROS_INFO("in second elif statement");
+        //     linear = 0.1;
+        //     if (yaw < 17 / 36 * M_PI || posX > 0.6) {
+        //         ROS_INFO("in first if statement of second elif statement");
+        //         angular = M_PI / 12;
+        //     }
+
+        //     else if (yaw < 19 / 36 * M_PI || posX < 0.4) {
+        //         ROS_INFO("in first elif statement of second elif statement");
+        //         angular = -M_PI / 12;
+        //     }
+        //     else {
+        //         ROS_INFO("in else statement of second elif statement");
+        //         angular = 0;
+        //     }
+        // }
+
+        // else {
+        //     ROS_INFO("in else statement");
+        //     angular = 0.0;
+        //     linear = 0.0;
+        //     break;
+        // } 
+
+        if (posX < 0.5 && posY < 0.5 && secondsElapsed > 120) {
+            ROS_INFO("changed to turning right");
+            angular *= -1;
+        }
 
         vel.angular.z = angular;
         vel.linear.x = linear;
