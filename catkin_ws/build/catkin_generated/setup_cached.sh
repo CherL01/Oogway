@@ -7,4 +7,7 @@
 # new environment variables
 
 # modified environment variables
-export PWD='/home/tuesday2023/catkin_ws/build'
+export CMAKE_PREFIX_PATH="/home/tuesday2023/Oogway/catkin_ws/devel:$CMAKE_PREFIX_PATH"
+export PWD='/home/tuesday2023/Oogway/catkin_ws/build'
+export ROSLISP_PACKAGE_DIRECTORIES='/home/tuesday2023/Oogway/catkin_ws/devel/share/common-lisp'
+export ROS_PACKAGE_PATH="/home/tuesday2023/Oogway/catkin_ws/src:$ROS_PACKAGE_PATH"
