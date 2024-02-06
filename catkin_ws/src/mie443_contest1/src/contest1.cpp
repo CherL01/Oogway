@@ -128,84 +128,47 @@ int main(int argc, char **argv)
             }
         }
 
-        // not spinning anymore, proceed to regular mapping conditions
-        else {
-
-            // if bumper pressed, move backwards and turn 20 deg
-            if (any_bumper_pressed) {
-                ROS_INFO("bumper pressed, too close! (attempt to back up and turn slightly)");
-                angular = M_PI / 9;
-                // linear = 0.01;
-                linear = -0.01;
-            }
-
-            // if min laser distance less than 0.7m, turn 
-            else if (minLaserDist < 0.7) {
-                ROS_INFO("laser distance < 0.7m, need to turn! (attempt to turn left/right to avoid hitting obstacles)");
-                linear = 0.0;
-                angular = M_PI / 2;
-                
-            }
-
-            // if yaw is less than 
-            else if (yaw < M_PI / 120 && yaw < M_PI / 120) {
-                ROS_INFO("cruising");
-                linear = 0.25;
-                angular = 0.0;
-            }
-
-        }
-
-        if (secondsElapsed % 30 == 0) {
-            ROS_INFO("it's been 30 seconds, time to scan");
-            scan_360 == true;
-        }
-
-        if (change_turn_direction == true) {
-            ROS_INFO("turning right");
-            angular *= -1;
-        }
-
-        else if (posX < 0.5 && posY < 0.5 && secondsElapsed > 120) {
-            ROS_INFO("changed to turning right");
-            change_turn_direction == true;
-        }
-
-        // if (posX < 0.5 && yaw < M_PI / 12 && !any_bumper_pressed && minLaserDist > 0.7) {
-        //     ROS_INFO("in first if statement");
-        //     angular = 0.0;
-        //     linear = 0.1;
-        // }
-
-        // else if (posX > 0.5 && yaw < M_PI / 2 && !any_bumper_pressed && minLaserDist > 0.5) {
-        //     ROS_INFO("in first elif statement");
-        //     angular = M_PI / 6;
-        //     linear = 0.0;
-        // }
-
-        // else if (minLaserDist > 1. && !any_bumper_pressed) {
-        //     ROS_INFO("in second elif statement");
-        //     linear = 0.1;
-        //     if (yaw < 17 / 36 * M_PI || posX > 0.6) {
-        //         ROS_INFO("in first if statement of second elif statement");
-        //         angular = M_PI / 12;
-        //     }
-
-        //     else if (yaw < 19 / 36 * M_PI || posX < 0.4) {
-        //         ROS_INFO("in first elif statement of second elif statement");
-        //         angular = -M_PI / 12;
-        //     }
-        //     else {
-        //         ROS_INFO("in else statement of second elif statement");
-        //         angular = 0;
-        //     }
-        // }
-
+        // // not spinning anymore, proceed to regular mapping conditions
         // else {
-        //     ROS_INFO("in else statement");
-        //     angular = 0.0;
-        //     linear = 0.0;
-        //     break;
+
+        //     // if bumper pressed, move backwards and turn 20 deg
+        //     if (any_bumper_pressed) {
+        //         ROS_INFO("bumper pressed, too close! (attempt to back up and turn slightly)");
+        //         angular = M_PI / 9;
+        //         // linear = 0.01;
+        //         linear = -0.01;
+        //     }
+
+        //     // if min laser distance less than 0.7m, turn 
+        //     else if (minLaserDist < 0.7) {
+        //         ROS_INFO("laser distance < 0.7m, need to turn! (attempt to turn left/right to avoid hitting obstacles)");
+        //         linear = 0.0;
+        //         angular = M_PI / 2;
+                
+        //     }
+
+        //     // if yaw is less than 
+        //     else if (yaw < M_PI / 120 && yaw < M_PI / 120) {
+        //         ROS_INFO("cruising");
+        //         linear = 0.25;
+        //         angular = 0.0;
+        //     }
+
+        // }
+
+        // if (secondsElapsed % 30 == 0) {
+        //     ROS_INFO("it's been 30 seconds, time to scan");
+        //     scan_360 == true;
+        // }
+
+        // if (change_turn_direction == true) {
+        //     ROS_INFO("turning right");
+        //     angular *= -1;
+        // }
+
+        // else if (posX < 0.5 && posY < 0.5 && secondsElapsed > 120) {
+        //     ROS_INFO("changed to turning right");
+        //     change_turn_direction == true;
         // } 
 
         vel.angular.z = angular;
