@@ -119,10 +119,10 @@ int main(int argc, char **argv)
             spin_countdown -= 1;
 
             // once countdown hits zero, stop spinning
-            if (spin_countdown == 0) {
+            if (- M_PI/ 119 < yaw < - M_PI / 120) {
                 ROS_INFO("done scanning 360 deg");
-                scan_360 == false;
-                spin_countdown = 4;
+                scan_360 = false;
+                // spin_countdown = 4;
                 angular = 0.0;
                 linear = 0.0;
             }
