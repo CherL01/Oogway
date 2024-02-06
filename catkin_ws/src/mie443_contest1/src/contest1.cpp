@@ -81,8 +81,6 @@ int main(int argc, char **argv)
 
     ros::Subscriber odom = nh.subscribe("odom", 1, &odomCallback);
 
-    //ros::Subscriber odom = nh.subscribe("odom", 1, odomCallback);
-
     ros::Rate loop_rate(10);
 
     geometry_msgs::Twist vel;
@@ -95,9 +93,13 @@ int main(int argc, char **argv)
     // float angular = 0.0;
     // float linear = 0.0;
 
+    int spin_countdown = 4;
+    bool scan_360 = true;
+
     while(ros::ok() && secondsElapsed <= 480) {
         ros::spinOnce();
         
+        // check if bumper pressed
         bool any_bumper_pressed = false;
         for (uint32_t b_idx = 0; b_idx < N_BUMPER; ++b_idx) {
             any_bumper_pressed |=(bumper[b_idx]==kobuki_msgs::BumperEvent::PRESSED);
@@ -106,14 +108,21 @@ int main(int argc, char **argv)
         //Control logic after bumpers are being pressed
         // ROS_INFO("Position: (%f, %f) Orientation: %f degrees Range: %f", posX, posY, RAD2DEG(yaw), minLaserDist);
 
-        bool scan_360 = true;
-        bool change_turn_direction = false;
+        
+        // bool change_turn_direction = false;
 
+        // spin 360 to scan area
         if (scan_360) {
             ROS_INFO("scanning 360 deg");
-            angular = 2 * M_PI - M_PI/120;
+            angular = M_PI / 2;
             linear = 0.0;
-            scan_360 == false;
+            spin_countdown -= 1;
+
+            // once countdown hits zero, stop spinning
+            if (spin_countdown == 0) {
+                scan_360 == false;
+                spin_countdown = 4;
+            }
         }
 
         if (any_bumper_pressed) {
