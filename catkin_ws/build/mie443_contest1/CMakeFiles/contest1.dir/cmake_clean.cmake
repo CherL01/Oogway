@@ -1,7 +1,7 @@
 file(REMOVE_RECURSE
   "CMakeFiles/contest1.dir/src/contest1.cpp.o"
-  "/home/tuesday2023/Oogway/catkin_ws/devel/lib/mie443_contest1/contest1.pdb"
-  "/home/tuesday2023/Oogway/catkin_ws/devel/lib/mie443_contest1/contest1"
+  "/home/hqi-oogway/Oogway/catkin_ws/devel/lib/mie443_contest1/contest1.pdb"
+  "/home/hqi-oogway/Oogway/catkin_ws/devel/lib/mie443_contest1/contest1"
 )
 
 # Per-language clean rules from dependency scanning.

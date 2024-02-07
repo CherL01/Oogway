@@ -17,7 +17,10 @@
 float posX = 0.0, posY = 0.0, yaw = 0.0;
 uint8_t bumper[3] = {kobuki_msgs::BumperEvent::RELEASED, kobuki_msgs::BumperEvent::RELEASED, kobuki_msgs::BumperEvent::RELEASED}; // Global variable to store bumper state
 float minLaserDist = std::numeric_limits<float>::infinity();
-int32_t nLasers=0, desiredNLasers=0, desiredAngle=5; // Global variable to store values from laser callback
+float leftMaxLaserDist = 0.0;
+float rightMaxLaserDist = 0.0;
+float maxLaserDist = 0.0;
+int32_t nLasers=0, desiredNLasers=0, desiredAngle=15; // Global variable to store values from laser callback
 
 
 void bumperCallback(const kobuki_msgs::BumperEvent::ConstPtr& msg)
@@ -28,7 +31,7 @@ void bumperCallback(const kobuki_msgs::BumperEvent::ConstPtr& msg)
 
 void laserCallback(const sensor_msgs::LaserScan::ConstPtr& msg)
 {
-	
+	maxLaserDist = 0.0;
     minLaserDist = std::numeric_limits<float>::infinity();
     nLasers = (msg->angle_max - msg->angle_min) / msg->angle_increment;
     desiredNLasers = desiredAngle*M_PI / (180*msg->angle_increment);
@@ -37,11 +40,26 @@ void laserCallback(const sensor_msgs::LaserScan::ConstPtr& msg)
     if (desiredAngle * M_PI / 180 < msg->angle_max && -desiredAngle * M_PI / 180 > msg->angle_min) {
         for (uint32_t laser_idx = nLasers / 2 - desiredNLasers; laser_idx < nLasers / 2 + desiredNLasers; ++laser_idx){
             minLaserDist = std::min(minLaserDist, msg->ranges[laser_idx]);
+            maxLaserDist = std::max(maxLaserDist, msg->ranges[laser_idx]);
         }
+// right
+        for (uint32_t laser_idx = 0; laser_idx < nLasers / 2 - desiredNLasers; ++laser_idx){
+            minLaserDist = std::min(minLaserDist, msg->ranges[laser_idx]);
+            rightMaxLaserDist = std::max(maxLaserDist, msg->ranges[laser_idx]);
+        }
+// left
+        for (uint32_t laser_idx = nLasers/2+ desiredNLasers; laser_idx < nLasers; ++laser_idx){
+            minLaserDist = std::min(minLaserDist, msg->ranges[laser_idx]);
+            leftMaxLaserDist = std::max(maxLaserDist, msg->ranges[laser_idx]);
+        }
+
+        
+
     }
     else {
         for (uint32_t laser_idx = 0; laser_idx < nLasers; ++laser_idx) {
             minLaserDist = std::min(minLaserDist, msg->ranges[laser_idx]);
+            maxLaserDist = std::max(maxLaserDist, msg->ranges[laser_idx]);
         }
     }
 }
@@ -79,25 +97,57 @@ int main(int argc, char **argv)
 
     while(ros::ok() && secondsElapsed <= 480) {
         ros::spinOnce();
-        
+
+        bool turning = false;
         bool any_bumper_pressed = false;
         for (uint32_t b_idx = 0; b_idx < N_BUMPER; ++b_idx) {
             any_bumper_pressed |= (bumper[b_idx] == kobuki_msgs::BumperEvent::PRESSED);
         }
-        
+
         // Spin at the start
-        if (secondsElapsed <= 15) {
-            angular = 0.5;
+        if (secondsElapsed <= 30) {
+            angular = 0.37;
+            linear = 0.0;
+            turning = true;
+        } else if (secondsElapsed >= 90 && secondsElapsed < 120) {
+            angular = 0.37;
+            linear = 0.0;
+            turning = true;
+        } else if (secondsElapsed >= 180 && secondsElapsed < 210) {
+            angular = 0.37;
+            linear = 0.0;
+            turning = true;
+        } else if (secondsElapsed >= 270 && secondsElapsed < 300) {
+            angular = 0.37;
+            linear = 0.0;
+            turning = true;
+        } else if (secondsElapsed >= 360 && secondsElapsed < 390) {
+            angular = 0.37;
+            linear = 0.0;
+            turning = true;
+        } 
+
+        // Open space to the left
+        if (leftMaxLaserDist > rightMaxLaserDist && minLaserDist > 0.5 && turning == false) {
+            angular = 0.12;
+            linear = 0.18;
+
+        // Open space to the right    
+        } else if (rightMaxLaserDist > leftMaxLaserDist && minLaserDist > 0.5 && turning == false) {
+            angular = -0.12;
+            linear = 0.18;
+        } else if (minLaserDist <= 0.5 && turning == false) {
+            
+            if (leftMaxLaserDist > rightMaxLaserDist) {
+                angular = 0.5;
+                linear = -0.05;
+            } else if (rightMaxLaserDist > leftMaxLaserDist) {
+                angular = -0.5;
+                linear = -0.05;
+            }
+
         }
 
-
-        if (minLaserDist > 0.5 && !any_bumper_pressed) {
-            angular = 0.0;
-            linear = 0.25;
-        } else {
-            angular = 0.5;
-            linear = 0.0;   
-        }
         
         /*
         // Control logic after bumpers are being pressed.
