@@ -106,35 +106,35 @@ int main(int argc, char **argv)
 
         // Spin at the start
         if (secondsElapsed <= 30) {
-            angular = 0.37;
+            angular = 0.3;
             linear = 0.0;
             turning = true;
         } else if (secondsElapsed >= 90 && secondsElapsed < 120) {
-            angular = 0.37;
+            angular = 0.3;
             linear = 0.0;
             turning = true;
         } else if (secondsElapsed >= 180 && secondsElapsed < 210) {
-            angular = 0.37;
+            angular = 0.3;
             linear = 0.0;
             turning = true;
         } else if (secondsElapsed >= 270 && secondsElapsed < 300) {
-            angular = 0.37;
+            angular = 0.3;
             linear = 0.0;
             turning = true;
         } else if (secondsElapsed >= 360 && secondsElapsed < 390) {
-            angular = 0.37;
+            angular = 0.3;
             linear = 0.0;
             turning = true;
         } 
 
         // Open space to the left
         if (leftMaxLaserDist > rightMaxLaserDist && minLaserDist > 0.5 && turning == false) {
-            angular = 0.12;
+            angular = 0.1;
             linear = 0.18;
 
         // Open space to the right    
         } else if (rightMaxLaserDist > leftMaxLaserDist && minLaserDist > 0.5 && turning == false) {
-            angular = -0.12;
+            angular = -0.1;
             linear = 0.18;
         } else if (minLaserDist <= 0.5 && turning == false) {
             
