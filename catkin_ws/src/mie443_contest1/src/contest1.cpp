@@ -138,13 +138,27 @@ int main(int argc, char **argv)
             linear = 0.18;
         } else if (minLaserDist <= 0.5 && turning == false) {
             
-            if (leftMaxLaserDist > rightMaxLaserDist) {
-                angular = 0.5;
-                linear = -0.05;
-            } else if (rightMaxLaserDist > leftMaxLaserDist) {
-                angular = -0.5;
-                linear = -0.05;
+            if (leftMaxLaserDist <= 0.5 && rightMaxLaserDist <= 0.5) {
+                // No space on either side, move forward
+                if (leftMaxLaserDist > rightMaxLaserDist) {
+                    angular = 0.0;
+                    linear = 0.1;
+                } else if (rightMaxLaserDist > leftMaxLaserDist) {
+                    angular = 0.0;
+                    linear = 0.1;
+                } 
+            } else {
+                // Space on one side, turn towards one side
+                if (leftMaxLaserDist > rightMaxLaserDist) {
+                    angular = 0.4;
+                    linear = -0.02;
+                } else if (rightMaxLaserDist > leftMaxLaserDist) {
+                    angular = -0.4;
+                    linear = -0.02;
+                } 
             }
+
+            
 
         }
 
