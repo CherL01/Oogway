@@ -1,4 +1,4 @@
-prefix=/home/tuesday2023/Oogway/catkin_ws/install
+prefix=/home/hqi-oogway/Oogway/catkin_ws/install
 
 Name: mie443_contest1
 Description: Description of mie443_contest1

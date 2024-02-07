@@ -43,10 +43,10 @@ RM = /usr/bin/cmake -E remove -f
 EQUALS = =
 
 # The top-level source directory on which CMake was run.
-CMAKE_SOURCE_DIR = /home/tuesday2023/Oogway/catkin_ws/src
+CMAKE_SOURCE_DIR = /home/hqi-oogway/Oogway/catkin_ws/src
 
 # The top-level build directory on which CMake was run.
-CMAKE_BINARY_DIR = /home/tuesday2023/Oogway/catkin_ws/build
+CMAKE_BINARY_DIR = /home/hqi-oogway/Oogway/catkin_ws/build
 
 # Utility rule file for geometry_msgs_generate_messages_cpp.
 
@@ -63,10 +63,10 @@ mie443_contest1/CMakeFiles/geometry_msgs_generate_messages_cpp.dir/build: geomet
 .PHONY : mie443_contest1/CMakeFiles/geometry_msgs_generate_messages_cpp.dir/build
 
 mie443_contest1/CMakeFiles/geometry_msgs_generate_messages_cpp.dir/clean:
-	cd /home/tuesday2023/Oogway/catkin_ws/build/mie443_contest1 && $(CMAKE_COMMAND) -P CMakeFiles/geometry_msgs_generate_messages_cpp.dir/cmake_clean.cmake
+	cd /home/hqi-oogway/Oogway/catkin_ws/build/mie443_contest1 && $(CMAKE_COMMAND) -P CMakeFiles/geometry_msgs_generate_messages_cpp.dir/cmake_clean.cmake
 .PHONY : mie443_contest1/CMakeFiles/geometry_msgs_generate_messages_cpp.dir/clean
 
 mie443_contest1/CMakeFiles/geometry_msgs_generate_messages_cpp.dir/depend:
-	cd /home/tuesday2023/Oogway/catkin_ws/build && $(CMAKE_COMMAND) -E cmake_depends "Unix Makefiles" /home/tuesday2023/Oogway/catkin_ws/src /home/tuesday2023/Oogway/catkin_ws/src/mie443_contest1 /home/tuesday2023/Oogway/catkin_ws/build /home/tuesday2023/Oogway/catkin_ws/build/mie443_contest1 /home/tuesday2023/Oogway/catkin_ws/build/mie443_contest1/CMakeFiles/geometry_msgs_generate_messages_cpp.dir/DependInfo.cmake --color=$(COLOR)
+	cd /home/hqi-oogway/Oogway/catkin_ws/build && $(CMAKE_COMMAND) -E cmake_depends "Unix Makefiles" /home/hqi-oogway/Oogway/catkin_ws/src /home/hqi-oogway/Oogway/catkin_ws/src/mie443_contest1 /home/hqi-oogway/Oogway/catkin_ws/build /home/hqi-oogway/Oogway/catkin_ws/build/mie443_contest1 /home/hqi-oogway/Oogway/catkin_ws/build/mie443_contest1/CMakeFiles/geometry_msgs_generate_messages_cpp.dir/DependInfo.cmake --color=$(COLOR)
 .PHONY : mie443_contest1/CMakeFiles/geometry_msgs_generate_messages_cpp.dir/depend
 
