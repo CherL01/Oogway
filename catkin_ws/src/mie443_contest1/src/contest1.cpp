@@ -13,6 +13,8 @@
 #include <nav_msgs/Odometry.h>
 #include <tf/transform_datatypes.h>
 
+// #include <contest1_utils.h>
+
 #define N_BUMPER (3)
 #define RAD2DEG(rad) ((rad)*180./M_PI)
 #define DEG2RAD(deg) ((deg)*M_PI /180.)
@@ -61,7 +63,7 @@ void odomCallback (const nav_msgs::Odometry::ConstPtr& msg)
     posX = msg->pose.pose.position.x;
     posY = msg->pose.pose.position.y;
     yaw = tf::getYaw(msg->pose.pose.orientation);
-    ROS_INFO("Position: (%f, %f) Orientation: %f rad or %f degrees.", posX, posY, yaw, RAD2DEG(yaw));
+    // ROS_INFO("Position: (%f, %f) Orientation: %f rad or %f degrees.", posX, posY, yaw, RAD2DEG(yaw));
 }
 
 float RandomFloat(float a, float b) {
@@ -73,7 +75,6 @@ float RandomFloat(float a, float b) {
 
 int main(int argc, char **argv)
 {
-
     ros::init(argc, argv, "maze_explorer");
     ros::NodeHandle nh;
 
@@ -95,41 +96,23 @@ int main(int argc, char **argv)
 
 
     // initialize loop variables
-
-    // angle tracking uses degrees!!
-    int angle_tracker = 0;
-    int yaw_deg = RAD2DEG(yaw);
-    int prev_yaw = yaw_deg;
-    int initial_yaw = yaw_deg;
-    int final_yaw = (initial_yaw + 360) % (360);
-
-    // travelling conditions
     bool scan_360 = true;
     bool change_turn_direction = false;
-    bool obstacle_avoidance = true;
     float collision_turn = M_PI / 9;
-    int collision_turn_deg = RAD2DEG(reg_turn);
     float reg_turn = M_PI / 3;
-    int reg_turn_deg = RAD2DEG(reg_turn);
+    float initial_yaw = yaw;
+    float final_yaw = initial_yaw - M_PI / 8 + 2 * M_PI;
+    float prev_yaw = yaw;
 
     while(ros::ok() && secondsElapsed <= 480) {
         ros::spinOnce();
 
-        // yaw preprocessing
-        // make everything positive!
         if (yaw < 0) {
             yaw += 2 * M_PI;
         }
+
+        float yaw_diff = abs(yaw - prev_yaw);
         
-        // change yaw to degrees
-        yaw_deg = RAD2DEG(yaw);
-
-        // get difference between current and previous yaw
-        int yaw_diff = abs(yaw_deg - prev_yaw_deg);
-
-        // // Control logic after bumpers are being pressed
-        // ROS_INFO("Position: (%f, %f) Orientation: %f degrees Range: %f", posX, posY, RAD2DEG(yaw), minLaserDist);
-
         // check if bumper pressed
         bool any_bumper_pressed = false;
         int bumper_num = -1;
@@ -140,21 +123,21 @@ int main(int argc, char **argv)
             }
         }
 
+        // Control logic after bumpers are being pressed
+        ROS_INFO("Position: (%f, %f) Orientation: %f degrees Range: %f", posX, posY, RAD2DEG(yaw), minLaserDist);
+
         // spin 360 to scan area
         if (scan_360) {
             ROS_INFO("scanning 360 deg");
             angular = reg_turn;
             linear = 0.0;
 
-            angle_tracker += yaw_diff;
-
             // stop spinning after 360
-            if (yaw_deg > final_yaw && angle_tracker > 2 * M_PI) {
+            if (yaw > final_yaw) {
                 ROS_INFO("done scanning 360 deg");
                 scan_360 = false;
                 angular = 0.0;
                 linear = 0.0;
-                angle_tracker = 0;
             }
         }
 
@@ -181,34 +164,30 @@ int main(int argc, char **argv)
                 linear = -0.01;
             }
 
-            // if min laser distance less than 1m, turn 
+            // if min laser distance less than 0.7m, turn 
             else if (minLaserDist < 1) {
                 ROS_INFO("laser distance < 1m, need to turn! (attempt to turn left/right to avoid hitting obstacles)");
-                if (obstacle_avoidance) {
-                    initial_yaw = yaw_deg;
-                    final_yaw = (initial_yaw + RAD2DEG(reg_turn)) % (360);
-                    obstacle_avoidance = false;
-                }
-
                 linear = 0.0;
                 angular = reg_turn;
-
-                angle_tracker += yaw_diff;
             }
 
             // no obstacles, go straight
-            else if (yaw_deg > final_yaw && angle_tracker > reg_turn_deg) {
+            else if (yaw_diff > reg_turn) {
                 ROS_INFO("cruising");
                 linear = 0.25;
                 angular = 0.0;
-                obstacle_avoidance = true;
             }
 
             if (secondsElapsed % 30 == 0) {
                 ROS_INFO("it's been 30 seconds, time to scan");
                 scan_360 = true;
-                initial_yaw = yaw_deg;
-                final_yaw = (initial_yaw + 360) % (360);
+                initial_yaw = yaw;
+                final_yaw = initial_yaw - M_PI / 8;
+                if (final_yaw < 0) {
+                    final_yaw += 2 * M_PI;
+
+                // ROS_INFO("final yaw: ", RAD2DEG(final_yaw));
+                }
             }
 
             if (change_turn_direction) {
