@@ -43,10 +43,10 @@ RM = /usr/bin/cmake -E remove -f
 EQUALS = =
 
 # The top-level source directory on which CMake was run.
-CMAKE_SOURCE_DIR = /home/hqi-oogway/Oogway/catkin_ws/src
+CMAKE_SOURCE_DIR = /home/tuesday2023/Oogway/catkin_ws/src
 
 # The top-level build directory on which CMake was run.
-CMAKE_BINARY_DIR = /home/hqi-oogway/Oogway/catkin_ws/build
+CMAKE_BINARY_DIR = /home/tuesday2023/Oogway/catkin_ws/build
 
 # Utility rule file for mie443_contest1_geneus.
 
@@ -63,10 +63,10 @@ mie443_contest1/CMakeFiles/mie443_contest1_geneus.dir/build: mie443_contest1_gen
 .PHONY : mie443_contest1/CMakeFiles/mie443_contest1_geneus.dir/build
 
 mie443_contest1/CMakeFiles/mie443_contest1_geneus.dir/clean:
-	cd /home/hqi-oogway/Oogway/catkin_ws/build/mie443_contest1 && $(CMAKE_COMMAND) -P CMakeFiles/mie443_contest1_geneus.dir/cmake_clean.cmake
+	cd /home/tuesday2023/Oogway/catkin_ws/build/mie443_contest1 && $(CMAKE_COMMAND) -P CMakeFiles/mie443_contest1_geneus.dir/cmake_clean.cmake
 .PHONY : mie443_contest1/CMakeFiles/mie443_contest1_geneus.dir/clean
 
 mie443_contest1/CMakeFiles/mie443_contest1_geneus.dir/depend:
-	cd /home/hqi-oogway/Oogway/catkin_ws/build && $(CMAKE_COMMAND) -E cmake_depends "Unix Makefiles" /home/hqi-oogway/Oogway/catkin_ws/src /home/hqi-oogway/Oogway/catkin_ws/src/mie443_contest1 /home/hqi-oogway/Oogway/catkin_ws/build /home/hqi-oogway/Oogway/catkin_ws/build/mie443_contest1 /home/hqi-oogway/Oogway/catkin_ws/build/mie443_contest1/CMakeFiles/mie443_contest1_geneus.dir/DependInfo.cmake --color=$(COLOR)
+	cd /home/tuesday2023/Oogway/catkin_ws/build && $(CMAKE_COMMAND) -E cmake_depends "Unix Makefiles" /home/tuesday2023/Oogway/catkin_ws/src /home/tuesday2023/Oogway/catkin_ws/src/mie443_contest1 /home/tuesday2023/Oogway/catkin_ws/build /home/tuesday2023/Oogway/catkin_ws/build/mie443_contest1 /home/tuesday2023/Oogway/catkin_ws/build/mie443_contest1/CMakeFiles/mie443_contest1_geneus.dir/DependInfo.cmake --color=$(COLOR)
 .PHONY : mie443_contest1/CMakeFiles/mie443_contest1_geneus.dir/depend
 
