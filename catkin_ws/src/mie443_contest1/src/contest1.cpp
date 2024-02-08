@@ -5,17 +5,14 @@
 
 //state globals
 
+bool local = true;
+
 //uint8_t is a boolean variable
 
 
 //float is 32-bit decimal 
-float angular = 0.0;
-float linear = 0.0;
 
-float targetYaw = 180.0;
-float remainingYaw = 0.0;
 
-bool turning = true;
 
 //target yaw greater than current yaw -> turn ccw
  //check how much left by remaining: (target yaw - current yaw)
@@ -50,8 +47,21 @@ int main(int argc, char **argv)
     float angular = 0.0;
     float linear = 0.0;
 
+    //print statement to differentiate local & oogway
+        
+    if (local)
+    {
+        ROS_INFO("This is Local, not uploaded to github");
+    }
+    else
+    {
+        ROS_INFO("This is Oogway, uploaded to github");
+    }
+
 
     while(ros::ok()) {
+
+        
         /*
         if (loopCount == 5) {
             break;
@@ -63,57 +73,20 @@ int main(int argc, char **argv)
 
         //fill with your code
 
-/*
+
         //turn CCW
+        auto speeds = turnCW(540);
+        //turnCCW(90);
 
-        remainingYaw = targetYaw - yaw;
-        ROS_INFO("Yaw: %f", yaw);
-        ROS_INFO("Target Yaw: %f", targetYaw);
-        ROS_INFO("Remaining Yaw: %f", remainingYaw);
-
-        if(remainingYaw <= 0.0) //stop once remaining is less than 0
-        {
-            angular = 0.0;
-            linear = 0.0;
-            ROS_INFO("Turning is false!");
-            ROS_INFO("Stopped turning...");
-
-            break;
-
-        }
-
-        else //keep rotating as long as there is remaining yaw
-        {
-            angular = M_PI/6;
-            linear = 0.0;
-            ROS_INFO("Turning CCW... remaining: %f", remainingYaw);
-        }*/
 
         //turn CW
+        //turnCW(270);
+        //turnCW(350);
+        angular = speeds.first;
+        linear = speeds.second;
 
-        remainingYaw = yaw - targetYaw;
-        ROS_INFO("Yaw: %f", yaw);
-        ROS_INFO("Target Yaw: %f", targetYaw);
-        ROS_INFO("Remaining Yaw: %f", remainingYaw);
-
-        if(remainingYaw <= 0.0) //stop once remaining is less than 0
-        {
-            angular = 0.0;
-            linear = 0.0;
-            ROS_INFO("Turning is false!");
-            ROS_INFO("Stopped turning...");
-
-            //break;
-        }
-
-        else //keep rotating as long as there is remaining yaw
-        {
-            angular = -M_PI/6;
-            linear = 0.0;
-            ROS_INFO("Turning CW... remaining: %f", remainingYaw);
-        }
-
-        
+        ROS_INFO("angular speed: %f, linear speed: %f", angular, linear);
+            
 
         vel.linear.x = linear;
         vel.angular.z = angular;
@@ -122,7 +95,7 @@ int main(int argc, char **argv)
         // The last thing to do is to update the timer.
         //secondsElapsed = std::chrono::duration_cast<std::chrono::seconds>(std::chrono::system_clock::now()-start).count();
         loop_rate.sleep();
-    }
+        }
 
     return 0;
 }

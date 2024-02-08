@@ -264,6 +264,7 @@ int main(int argc, char **argv)
             if (eStop_yaw + relative_yaw >= 2*M_PI) {
                 targetYaw -= 2*M_PI;
             }
+            
             ROS_INFO("Target Yaw: %f", RAD2DEG(targetYaw));
             ROS_INFO("Current Yaw: %f", RAD2DEG(yaw));
 

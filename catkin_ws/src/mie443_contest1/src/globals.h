@@ -37,6 +37,11 @@ const float midLimit = 0.7;
 //odometery variables
 extern float posX, posY, yaw;
 
+//moving variables
+extern float angular, linear;
+extern bool turning;
+extern bool moving;
+
 //bumper variables
 extern uint8_t bumper[3];
 extern bool anyBumperPressed;
