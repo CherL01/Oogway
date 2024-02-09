@@ -96,21 +96,16 @@ int main(int argc, char **argv)
 
     // initialize loop variables
 
-    // angle tracking uses degrees!!
-    int angle_tracker = 0;
-    int yaw_deg = RAD2DEG(yaw);
-    int prev_yaw_deg = yaw_deg;
-    int initial_yaw = yaw_deg;
-    int final_yaw = (initial_yaw + 360) % (360);
+    // angle tracking
+    double angle_tracker = 2 * M_PI;
+    double prev_yaw = yaw;
 
     // travelling conditions
     bool scan_360 = true;
     bool change_turn_direction = false;
-    bool obstacle_avoidance = true;
+    bool bumper_pressed_prev = false;
     float collision_turn = M_PI / 9;
-    int collision_turn_deg = RAD2DEG(collision_turn);
     float reg_turn = M_PI / 3;
-    int reg_turn_deg = RAD2DEG(reg_turn);
 
     while(ros::ok() && secondsElapsed <= 480) {
         ros::spinOnce();
@@ -120,15 +115,9 @@ int main(int argc, char **argv)
         if (yaw < 0) {
             yaw += 2 * M_PI;
         }
-        
-        // change yaw to degrees
-        yaw_deg = int RAD2DEG(yaw);
-
-        ROS_INFO("yaw (deg): ", yaw_deg);
 
         // get difference between current and previous yaw
-        int yaw_diff = abs(yaw_deg - prev_yaw_deg);
-        ROS_INFO("%f", yaw_diff);
+        double yaw_diff = abs(yaw - prev_yaw);
 
         // // Control logic after bumpers are being pressed
         // ROS_INFO("Position: (%f, %f) Orientation: %f degrees Range: %f", posX, posY, RAD2DEG(yaw), minLaserDist);
@@ -149,26 +138,32 @@ int main(int argc, char **argv)
             angular = reg_turn;
             linear = 0.0;
 
-            angle_tracker += yaw_diff;
+            angle_tracker -= yaw_diff;
 
             // stop spinning after 360
-            if (yaw_deg > final_yaw && angle_tracker > 2 * M_PI) {
+            if (angle_tracker < 0) {
                 ROS_INFO("done scanning 360 deg");
                 scan_360 = false;
                 angular = 0.0;
                 linear = 0.0;
-                angle_tracker = 0;
+                angle_tracker = 2 * M_PI;
             }
         }
 
         // not spinning anymore, proceed to regular mapping conditions
         else {
 
-            // if bumper pressed, move backwards and turn 20 deg
+            // if bumper pressed, move backwards
             if (any_bumper_pressed) {
-                ROS_INFO("bumper pressed, too close! (attempt to back up and turn slightly)");
+                ROS_INFO("bumper pressed, too close! (attempt to back up)");
+                linear = -0.1;
+                bumper_pressed_prev = true;
+                int bumper_num_pressed = bumper_num;
+            }
+            // check which bumper pressed, move opposite direction
+            else if (bumper_pressed_prev) {
 
-                switch (bumper_num) {
+                switch (bumper_num_pressed) {
 
                     case 0:
                         angular = -collision_turn;
@@ -178,20 +173,11 @@ int main(int argc, char **argv)
                         angular = collision_turn;
                         break;
                 }
-
-                // angular = collision_turn;
-                // linear = 0.01;
-                linear = 0.01;
             }
 
             // if min laser distance less than 1m, turn 
             else if (minLaserDist < 1) {
                 ROS_INFO("laser distance < 1m, need to turn! (attempt to turn left/right to avoid hitting obstacles)");
-                if (obstacle_avoidance) {
-                    initial_yaw = yaw_deg;
-                    final_yaw = (initial_yaw + int RAD2DEG(reg_turn)) % (360);
-                    obstacle_avoidance = false;
-                }
 
                 linear = 0.0;
                 angular = reg_turn;
@@ -200,11 +186,10 @@ int main(int argc, char **argv)
             }
 
             // no obstacles, go straight
-            else if (yaw_deg > final_yaw && angle_tracker > reg_turn_deg) {
+            else {
                 ROS_INFO("cruising");
                 linear = 0.25;
                 angular = 0.0;
-                obstacle_avoidance = true;
             }
 
             if (secondsElapsed % 30 == 0) {
