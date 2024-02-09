@@ -141,28 +141,52 @@ int main(int argc, char **argv)
             if (stepsCount == SCAN_STEP)
             {
                 ROS_INFO("SCANNING...");
-                if (subStepsCount == 0) // initially turn 180 ccw
-                {
-                    targetYaw = yaw +180;
-                    turnCCW(targetYaw, angular, linear, remainingYaw);
 
+                if (subStepsCount == 0) 
+                [
+                    ROS_INFO("Correcting Yaw! Current Yaw: %f", yaw); // correcting yaw:it initially is 0
+                    subStepsCount++;
+                ]
+                
+                
+                else if (subStepsCount == 1) // initially turn 180 ccw
+                {
+                    //targetYaw = yaw +180;
+                    //turnCCW(targetYaw, angular, linear, remainingYaw);
+
+                    ///* comment block for 
+                    //test 1
+                    currentX = posX;
+                    currentY = posY;
+                    targetDist = 0.01; //0.01, 0.05, 0.1, 0.2
+                    moveFront(targetDist, currentX, currentY, angular, linear, turtleSpeed);
+
+                    //test 2
+                    targetYaw = yaw +90; //90, 450, 10, 15 
+                    turnCCW(targetYaw, angular, linear, remainingYaw);
+                    
+                    //*/
                     subStepsCount++;
                     
                 } 
 
-                else if (subStepsCount == 1) // turn another 180 ccw for 1 full loop
+                else if (subStepsCount == 2) // turn another 180 ccw for 1 full loop
                 {
+                    //*/
                     targetYaw = yaw +180;
                     turnCCW(targetYaw, angular, linear, remainingYaw);
+//*/
 
                     subStepsCount++;
                 }
 
-                else if (subStepsCount == 2)
+                else if (subStepsCount == 3)
                 {
+                    ///* comment block for test
                     targetYaw = openYaw;
                     turnCCW(targetYaw, angular, linear, remainingYaw);
 
+                    //*/
                     subStepsCount = 0;
                     stepsCount = TRAVEL_STEP;
                     maxLaserDist = 0.0;
@@ -170,7 +194,6 @@ int main(int argc, char **argv)
 
                     std::chrono::time_point<std::chrono::system_clock> travelStart;
                     travelStart = std::chrono::system_clock::now();
-
                     travelLoop = 0;
                     
                 }
