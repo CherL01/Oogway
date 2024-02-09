@@ -8,11 +8,11 @@ void environmentSearch::setup() {
 
 }
 
-void environmentSearch::search() {
+void environmentSearch::search(uint64_t secondsElapsed) {
     // main search code
     ROS_INFO("Searching...");
     ros::spinOnce();
-
+    envSearchMain(secondsElapsed);
 }
 
 // PRIVATE //

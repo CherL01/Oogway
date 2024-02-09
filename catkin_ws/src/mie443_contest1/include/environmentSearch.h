@@ -25,6 +25,10 @@ class environmentSearch {
 
     private:
         // hi
+        ros::NodeHandle nh;
+        ros::Publisher vel_pub;
+        ros::Subscriber bumper_sub, laser_sub, odom;
+        
         float posX = 0.0, posY = 0.0, yaw = 0.0;
         uint8_t bumper[3] = {kobuki_msgs::BumperEvent::RELEASED, kobuki_msgs::BumperEvent::RELEASED, kobuki_msgs::BumperEvent::RELEASED}; // Global variable to store bumper state
         float minLaserDist = std::numeric_limits<float>::infinity();
@@ -46,14 +50,19 @@ class environmentSearch {
     public:
         // hey
         
-        ros::Subscriber bumper_sub = nh.subscribe("mobile_base/events/bumper", 10, &bumperCallback);
-        ros::Subscriber laser_sub = nh.subscribe("scan", 10, &laserCallback);
-        ros::Subscriber odom = nh.subscribe("odom", 1, &odomCallback);
+        environmentSearch() {
+            cout << "Class created" << end1
+            
+            bumper_sub = nh.subscribe("mobile_base/events/bumper", 10, &bumperCallback);
+            laser_sub = nh.subscribe("scan", 10, &laserCallback);
+            odom = nh.subscribe("odom", 1, &odomCallback);
 
-        ros::Publisher vel_pub = nh.advertise<geometry_msgs::Twist>("cmd_vel_mux/input/teleop", 1);
-
+            vel_pub = nh.advertise<geometry_msgs::Twist>("cmd_vel_mux/input/teleop", 1);
+  
+        }
+        
         void setup();
         void search();
 
 
-}
+};
