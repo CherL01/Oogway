@@ -5,7 +5,6 @@ uint8_t bumper[3] = {kobuki_msgs::BumperEvent::RELEASED, kobuki_msgs::BumperEven
 uint8_t leftState = bumper[kobuki_msgs::BumperEvent::LEFT];
 uint8_t rightState = bumper[kobuki_msgs::BumperEvent::RIGHT];
 uint8_t centerState = bumper[kobuki_msgs::BumperEvent::CENTER];
-bool anyBumperPressed = false;
 
 void bumperCallback(const kobuki_msgs::BumperEvent::ConstPtr& msg)
 {

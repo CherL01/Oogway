@@ -39,6 +39,8 @@ extern float angular, linear;
 extern int turning;
 extern bool isMoving;
 
+const float normal=0.25, slowDown=0.1;
+
 //bumper variables
 extern uint8_t bumper[3];
 extern bool anyBumperPressed;

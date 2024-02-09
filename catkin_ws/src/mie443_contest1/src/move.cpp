@@ -129,9 +129,9 @@ void checkTurnCCW (float& targetYaw, float& angular, float& linear, float& remai
 
     remainingYaw = targetYaw - yaw; //initialize remainingYaw
     
-    //ROS_INFO("Yaw: %f", yaw);
-    //ROS_INFO("Target Yaw: %f", targetYaw);
-    //ROS_INFO("Remaining Yaw: %f", remainingYaw); 
+    ROS_INFO("Yaw: %f", yaw);
+    ROS_INFO("Target Yaw: %f", targetYaw);
+    ROS_INFO("Remaining Yaw: %f", remainingYaw); 
 
     ///* logic to check ismovingis done 
     if(remainingYaw <= 0.0) //stop once remaining is less than 0
@@ -179,7 +179,7 @@ void checkTurnCW (float& targetYaw, float& angular, float& linear, float& remain
 
 /////MOVING
 //functions to move forwards and backwards
-void moveFront (float& targetDist, float& currentX, float& currentY, float& angular, float& linear)
+void moveFront (float& targetDist, float& currentX, float& currentY, float& angular, float& linear, float& turtleSpeed)
 {
     dist = sqrt(pow(currentX-posX, 2) + pow(currentY-posY, 2));
 
@@ -189,18 +189,18 @@ void moveFront (float& targetDist, float& currentX, float& currentY, float& angu
     {
         angular = 0.0;
         linear = 0.0;
-        ROS_INFO("STOPPED MOVING!!");
+        ROS_INFO("COMPLETED MOVING...");
     }
 
     else
     {
         angular = 0.0;
-        linear = 0.25;
+        linear = turtleSpeed;
         
     }
 }
 
-void moveBack (float& targetDist, float& currentX, float& currentY, float& angular, float& linear)
+void moveBack (float& targetDist, float& currentX, float& currentY, float& angular, float& linear, float& turtleSpeed)
 {
     dist = sqrt(pow(currentX-posX, 2) + pow(currentY-posY, 2));
 
@@ -216,14 +216,14 @@ void moveBack (float& targetDist, float& currentX, float& currentY, float& angul
     else
     {
         angular = 0.0;
-        linear = -0.25;
+        linear = -turtleSpeed;
         
     }
 
 }
 
 //check functions to see if move completed - run while moving
-void checkMoveFront (float& targetDist, float& currentX, float& currentY, float& angular, float& linear)
+void checkMoveFront (float& targetDist, float& currentX, float& currentY, float& angular, float& linear, float& turtleSpeed)
 {
     dist = sqrt(pow(currentX-posX, 2) + pow(currentY-posY, 2));
 
@@ -233,17 +233,17 @@ void checkMoveFront (float& targetDist, float& currentX, float& currentY, float&
     {
         angular = 0.0;
         linear = 0.0;
-        ROS_INFO("STOPPED MOVING!!");
+        ROS_INFO("COMPLETED MOVING...");
     }
 
     else
     {
         angular = 0.0;
-        linear = 0.25;
+        linear = turtleSpeed;
     }
 }
 
-void checkMoveBack (float& targetDist, float& currentX, float& currentY, float& angular, float& linear);
+void checkMoveBack (float& targetDist, float& currentX, float& currentY, float& angular, float& linear, float& turtleSpeed)
 {
     dist = sqrt(pow(currentX-posX, 2) + pow(currentY-posY, 2));
 
@@ -259,6 +259,6 @@ void checkMoveBack (float& targetDist, float& currentX, float& currentY, float& 
     else
     {
         angular = 0.0;
-        linear = -0.25;
+        linear = -turtleSpeed;
     }
 }

@@ -23,11 +23,11 @@ void checkTurnCCW (float& targetYaw, float& angular, float& linear, float& remai
 void checkTurnCW (float& targetYaw, float& angular, float& linear, float& remainingYaw);
 
 //functions to move
-void moveFront (float& targetDist, float& currentX, float& currentY, float& angular, float& linear);
-void moveBack (float& targetDist, float& currentX, float& currentY, float& angular, float& linear);
+void moveFront (float& targetDist, float& currentX, float& currentY, float& angular, float& linear, float& turtleSpeed);
+void moveBack (float& targetDist, float& currentX, float& currentY, float& angular, float& linear, float&turtleSpeed);
 
 //check functions to see if move completed - run while moving
-void checkMoveFront (float& targetDist, float& currentX, float& currentY, float& angular, float& linear);
-void checkMoveBack (float& targetDist, float& currentX, float& currentY, float& angular, float& linear);
+void checkMoveFront (float& targetDist, float& currentX, float& currentY, float& angular, float& linear, float&turtleSpeed);
+void checkMoveBack (float& targetDist, float& currentX, float& currentY, float& angular, float& linear, float& turtleSpeed);
 
 #endif
