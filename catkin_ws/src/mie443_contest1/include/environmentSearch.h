@@ -1,4 +1,6 @@
 // INCLUDE //
+#ifndef ES_HEADER
+#define ES_HEADER
 
 // ROS //
 #include <ros/console.h>
@@ -19,7 +21,7 @@
 #define RAD2DEG(rad) ((rad) * 180. / M_PI)
 #define DEG2RAD(deg) ((deg) * M_PI / 180.)
 
-
+using namespace std;
 
 class environmentSearch {
 
@@ -51,18 +53,20 @@ class environmentSearch {
         // hey
         
         environmentSearch() {
-            cout << "Class created" << end1
+            cout << "Class created" << endl;
             
-            bumper_sub = nh.subscribe("mobile_base/events/bumper", 10, &bumperCallback);
-            laser_sub = nh.subscribe("scan", 10, &laserCallback);
-            odom = nh.subscribe("odom", 1, &odomCallback);
+            bumper_sub = nh.subscribe("mobile_base/events/bumper", 10, &environmentSearch::bumperCallback, this);
+            laser_sub = nh.subscribe("scan", 10, &environmentSearch::laserCallback, this);
+            odom = nh.subscribe("odom", 1, &environmentSearch::odomCallback, this);
 
             vel_pub = nh.advertise<geometry_msgs::Twist>("cmd_vel_mux/input/teleop", 1);
   
         }
         
         void setup();
-        void search();
+        void search(uint64_t secondsElapsed);
 
 
 };
+
+#endif
