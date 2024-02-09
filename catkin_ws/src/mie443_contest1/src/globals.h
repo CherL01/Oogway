@@ -25,9 +25,6 @@
 
 //global variables
 
-//velocities being published
-extern float angular;
-extern float linear;
 
 const float slowDownLimit = 0.8;
 const float stopLimit = 0.5;
@@ -39,8 +36,8 @@ extern float posX, posY, yaw;
 
 //moving variables
 extern float angular, linear;
-extern bool turning;
-extern bool moving;
+extern int turning;
+extern bool isMoving;
 
 //bumper variables
 extern uint8_t bumper[3];

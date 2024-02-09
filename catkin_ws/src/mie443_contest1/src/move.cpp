@@ -1,10 +1,13 @@
 #include "move.h"
 
 float posX=0.0, posY=0.0, yaw=0.0;
-float remainingYaw = 0.0;
-bool turning = true;
+float remainingYaw = std::numeric_limits<float>::infinity();
+float targetYaw = std::numeric_limits<float>::infinity();
 
-float angular=0.0, linear = 0.0;
+float remainingDist = std::numeric_limits<float>::infinity();
+float dist = 0.0;
+
+
 
 
 void odomCallback (const nav_msgs::Odometry::ConstPtr& msg)
@@ -23,7 +26,7 @@ void odomCallback (const nav_msgs::Odometry::ConstPtr& msg)
 }
 
 //function to turn counterclockwise
-std::pair<float,float> turnCCW (float targetYaw)
+void turnCCW (float& targetYaw, float& angular, float& linear, float& remainingYaw)
 {
     //correct any out of bounds for targetYaw
 
@@ -42,19 +45,19 @@ std::pair<float,float> turnCCW (float targetYaw)
         targetYaw += 360;
     }
 
-    remainingYaw = targetYaw - yaw;
+    remainingYaw = targetYaw - yaw; //initialize remainingYaw
     
-    ROS_INFO("Yaw: %f", yaw);
-    ROS_INFO("Target Yaw: %f", targetYaw);
-    ROS_INFO("Remaining Yaw: %f", remainingYaw);
+    //ROS_INFO("Yaw: %f", yaw);
+    //ROS_INFO("Target Yaw: %f", targetYaw);
+    //ROS_INFO("Remaining Yaw: %f", remainingYaw); 
 
-
+    ///* logic to check ismovingis done 
     if(remainingYaw <= 0.0) //stop once remaining is less than 0
     {
         angular = 0.0;
         linear = 0.0;
-        ROS_INFO("Turning is false!");
-        ROS_INFO("Stopped turning...");
+        //ROS_INFO("Turning is false!");
+        //ROS_INFO("Stopped turning...");
 
     }
 
@@ -62,14 +65,13 @@ std::pair<float,float> turnCCW (float targetYaw)
     {
         angular = M_PI/6;
         linear = 0.0;
-        ROS_INFO("Turning CCW... remaining: %f", remainingYaw);
-    }
+        //ROS_INFO("Turning CCW... remaining: %f", remainingYaw);
+    } //logic to ~~ */
 
-    return std::make_pair (angular, linear);
 }
 
 //function to turn clockwise
-std::pair<float, float> turnCW (float targetYaw)
+void turnCW (float& targetYaw, float& angular, float& linear, float& remainingYaw)
 {
 
     //correct any out of bounds for targetYaw
@@ -89,16 +91,11 @@ std::pair<float, float> turnCW (float targetYaw)
     }
 
     remainingYaw = yaw - targetYaw;
-    ROS_INFO("Yaw: %f", yaw);
-    ROS_INFO("Target Yaw: %f", targetYaw);
-    ROS_INFO("Remaining Yaw: %f", remainingYaw);
 
     if(remainingYaw <= 0.0) //stop once remaining is less than 0
     {
         angular = 0.0;
         linear = 0.0;
-        ROS_INFO("Turning is false!");
-        ROS_INFO("Stopped turning...");
 
         //break;
     }
@@ -107,8 +104,161 @@ std::pair<float, float> turnCW (float targetYaw)
     {
         angular = -M_PI/6;
         linear = 0.0;
-        ROS_INFO("Turning CW... remaining: %f", remainingYaw);
+        //ROS_INFO("Turning CW... remaining: %f", remainingYaw);
+    }
+}
+
+void checkTurnCCW (float& targetYaw, float& angular, float& linear, float& remainingYaw)
+{
+    //correct any out of bounds for targetYaw
+
+    if (targetYaw >= 360)
+    {
+        targetYaw = targetYaw - 360;
+    }
+    else if (targetYaw <= 0)
+    {
+        targetYaw = targetYaw + 360;
+    } 
+
+
+    if (yaw > targetYaw && abs(yaw-targetYaw) > 4) //need to tune threshold value 4
+    {
+        targetYaw += 360;
     }
 
-    return std::make_pair (angular, linear);
+    remainingYaw = targetYaw - yaw; //initialize remainingYaw
+    
+    //ROS_INFO("Yaw: %f", yaw);
+    //ROS_INFO("Target Yaw: %f", targetYaw);
+    //ROS_INFO("Remaining Yaw: %f", remainingYaw); 
+
+    ///* logic to check ismovingis done 
+    if(remainingYaw <= 0.0) //stop once remaining is less than 0
+    {
+        angular = 0.0;
+        linear = 0.0;
+        //ROS_INFO("Turning is false!");
+        //ROS_INFO("Stopped turning...");
+
+    }
+
+}
+
+void checkTurnCW (float& targetYaw, float& angular, float& linear, float& remainingYaw)
+{
+
+    //correct any out of bounds for targetYaw
+    if (targetYaw >= 360)
+    {
+        targetYaw = targetYaw - 360;
+    }
+    else if (targetYaw <= 0)
+    {
+        targetYaw = targetYaw + 360;
+    }
+
+
+    if (yaw < targetYaw && abs(yaw-targetYaw) > 4)
+    {
+        targetYaw -= 360;
+    }
+
+    remainingYaw = yaw - targetYaw;
+
+    if(remainingYaw <= 0.0) //stop once remaining is less than 0
+    {
+        angular = 0.0;
+        linear = 0.0;
+
+        //break;
+    }
+}
+
+
+
+/////MOVING
+//functions to move forwards and backwards
+void moveFront (float& targetDist, float& currentX, float& currentY, float& angular, float& linear)
+{
+    dist = sqrt(pow(currentX-posX, 2) + pow(currentY-posY, 2));
+
+    remainingDist = targetDist - dist;
+
+    if (remainingDist <= 0)
+    {
+        angular = 0.0;
+        linear = 0.0;
+        ROS_INFO("STOPPED MOVING!!");
+    }
+
+    else
+    {
+        angular = 0.0;
+        linear = 0.25;
+        
+    }
+}
+
+void moveBack (float& targetDist, float& currentX, float& currentY, float& angular, float& linear)
+{
+    dist = sqrt(pow(currentX-posX, 2) + pow(currentY-posY, 2));
+
+    remainingDist = targetDist - dist;
+
+    if (remainingDist <= 0)
+    {
+        angular = 0.0;
+        linear = 0.0;
+        ROS_INFO("STOPPED MOVING!!");
+    }
+
+    else
+    {
+        angular = 0.0;
+        linear = -0.25;
+        
+    }
+
+}
+
+//check functions to see if move completed - run while moving
+void checkMoveFront (float& targetDist, float& currentX, float& currentY, float& angular, float& linear)
+{
+    dist = sqrt(pow(currentX-posX, 2) + pow(currentY-posY, 2));
+
+    remainingDist = targetDist - dist;
+
+    if (remainingDist <= 0)
+    {
+        angular = 0.0;
+        linear = 0.0;
+        ROS_INFO("STOPPED MOVING!!");
+    }
+
+    else
+    {
+        angular = 0.0;
+        linear = 0.25;
+    }
+}
+
+void checkMoveBack (float& targetDist, float& currentX, float& currentY, float& angular, float& linear);
+{
+    dist = sqrt(pow(currentX-posX, 2) + pow(currentY-posY, 2));
+
+    remainingDist = targetDist - dist;
+
+    if (remainingDist <= 0)
+    {
+        angular = 0.0;
+        linear = 0.0;
+        ROS_INFO("STOPPED MOVING!!");
+    }
+
+    else
+    {
+        angular = 0.0;
+        linear = -0.25;
+    }
 }

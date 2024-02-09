@@ -198,7 +198,7 @@ int main(int argc, char **argv)
         float stopLimit = 0.5;
         float maxOpening = 0.95;
         float midLimit = 0.6;
-        float leftLimit = 0.75
+        float leftLimit = 0.75;
         
 
         ros::spinOnce();
@@ -435,7 +435,7 @@ int main(int argc, char **argv)
 
                 }
 
-                //turn cw until left scan is greater than 0.85!
+                //turn cw if only left is too close
                 if (leftLaserDist <= stopLimit && minLaserDist > stopLimit && rightLaserDist > stopLimit) {
                     while (leftLaserDist <= leftLimit) {
                         ros::spinOnce();
@@ -465,21 +465,6 @@ int main(int argc, char **argv)
                     vel.angular.z = angular;
                     vel_pub.publish(vel);
                     ROS_INFO("Turning CCW... Speed: %f", vel.angular.z);
-                }
-
-                //turn cw if right scan opening is too much
-                while (minLaserDist >= maxOpening || rightLaserDist >= maxOpening) {
-
-                    ros::spinOnce();
-
-                    ROS_INFO("FRONT: %g", minLaserDist);
-                    ROS_INFO("RIGHT-END: %g", rightLaserDist);
-                    ROS_INFO("LEFT-END: %g", leftLaserDist);
-
-                    angular = -angSpeed;
-                    vel.angular.z = angular;
-                    vel_pub.publish(vel);
-                    ROS_INFO("Turning CW...Speed: %f", vel.angular.z);
                 }
 
                 

@@ -6,6 +6,8 @@ float leftLaserDist = std::numeric_limits<float>::infinity();
 float rightLaserDist = std::numeric_limits<float>::infinity();
 int32_t nLasers=0, desiredNLasers=0, desiredAngle=15;
 
+//NEED TO INCLUDE SET_SPEED TO ADJUST SPEED BASED ON SENSOR READINGS
+
 
 void laserCallback(const sensor_msgs::LaserScan::ConstPtr& msg)
 {
