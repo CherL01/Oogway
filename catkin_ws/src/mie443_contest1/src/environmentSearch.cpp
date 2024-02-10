@@ -17,62 +17,89 @@ void environmentSearch::search(uint64_t secondsElapsed) {
 
 // PRIVATE //
 
+///////////////////////////////////
+////////   MAIN CODE   ////////////
+///////////////////////////////////
+
 void environmentSearch::envSearchMain(uint64_t secondsElapsed) {
-    
+    // Process a single round of callbacks
+    ros::spinOnce();
+
     float angular = 0.0;
     float linear = 0.0;
     bool turning = false;
 
     // Spin at the start, spin once in a while
     if (secondsElapsed <= 20) {
-        angular = 0.25;
-        linear = 0.0;
-        turning = true;
+        randomScan(angular, linear);
+
     } else if (secondsElapsed >= 20 && secondsElapsed < 30) {
-        angular = -0.25;
-        linear = 0.0;
-        turning = true;
+        angular = -1*angular;
+        randomScan(angular, linear);
+
     } else if (secondsElapsed >= 120 && secondsElapsed < 150) {
-        angular = 0.3;
-        linear = 0.0;
-        turning = true;
+        randomScan(angular, linear);
+
     } else if (secondsElapsed >= 210 && secondsElapsed < 240) {
-        angular = 0.3;
-        linear = 0.0;
-        turning = true;
+        randomScan(angular, linear);
+
     } else if (secondsElapsed >= 300 && secondsElapsed < 330) {
-        angular = 0.3;
-        linear = 0.0;
-        turning = true;
-        } else if (secondsElapsed >= 390 && secondsElapsed < 420) {
-        angular = 0.3;
-        linear = 0.0;
-        turning = true;
+        randomScan(angular, linear);
+
+    } else if (secondsElapsed >= 390 && secondsElapsed < 420) {
+        randomScan(angular, linear);
+
     } 
 
-    // Open space to the left
-    if (leftMaxLaserDist > rightMaxLaserDist && minLaserDist > 0.5 && turning == false) {
-        angular = 0.125;
-        linear = 0.175;
+    // Default movement
+    if (minLaserDist > wallLimit) {
+        angular = pController(minLeftDist, minRightDist, leftIndex, rightIndex, kp);
+        
+    } else if (minLaserDist < wallLimit) {
+        randomScan();
+        linear = 0.1;
 
-    // Open space to the right    
-    } else if (rightMaxLaserDist > leftMaxLaserDist && minLaserDist > 0.5 && turning == false) {
-        angular = -0.125;
-        linear = 0.175;
-
-    } else if (minLaserDist <= 0.5 && turning == false) {
-            
-        // Too close to a wall, back up and slightly turn
-        if (leftMaxLaserDist > rightMaxLaserDist) {
-            angular = 0.5;
-            linear = -0.03;
-        } else if (rightMaxLaserDist > leftMaxLaserDist) {
-            angular = -0.5;
-            linear = -0.03;
-        } 
-
+    } else {
+        avoidWall();
     }
 
+
+
+    // // Open space to the left
+    // if (leftMaxLaserDist > rightMaxLaserDist && minLaserDist > 0.5 && turning == false) {
+    //     angular = 0.125;
+    //     linear = 0.175;
+
+    // // Open space to the right    
+    // } else if (rightMaxLaserDist > leftMaxLaserDist && minLaserDist > 0.5 && turning == false) {
+    //     angular = -0.125;
+    //     linear = 0.175;
+
+    // } else if (minLaserDist <= 0.5 && turning == false) {
+            
+    //     // Too close to a wall, back up and slightly turn
+    //     if (leftMaxLaserDist > rightMaxLaserDist) {
+    //         angular = 0.5;
+    //         linear = -0.03;
+    //     } else if (rightMaxLaserDist > leftMaxLaserDist) {
+    //         angular = -0.5;
+    //         linear = -0.03;
+    //     } 
+
+    // }
+
+    publishVelocity(angular, linear);
+}
+
+///////////////////////////////////
+//////   MAIN CODE ENDS   /////////
+///////////////////////////////////
+
+void environmentSearch::randomScan(float angular, float linear) {
+    
+    // Turn in place
+    angular = 0.3;
+    linear = 0.0;
     publishVelocity(angular, linear);
 }
 
@@ -86,8 +113,24 @@ void environmentSearch::publishVelocity(float angular, float linear) {
     ros::spinOnce();
 }
 
+/* feb 9
+void environmentSearch::pController(float minLeftDist, float minRightDist, float leftIndex, float rightIndex, float kp) {
+    float angular = 0.0;
+    float laserDiff = minLeftDist - minRightDist;
+    float indexDiff = leftIndex - rightIndex;
+
+    if (laserDiff > 0.4) {
+        angular = kp * laserDiff/minLeftDist;
+    } else if (-1*laserDiff > 0.4) {
+        angular = kp * laserDiff/minRightDist;
+    }
+
+    return angular;
+
+}
+*/
 void environmentSearch::avoidWall() {
-    float wallLimit = 0.5;
+    
     float currentWallDist = minLaserDist;
 
     float yawAdjustment = 0.0;
@@ -115,6 +158,9 @@ void environmentSearch::laserCallback(const sensor_msgs::LaserScan::ConstPtr& ms
 {
 	maxLaserDist = 0.0;
     minLaserDist = std::numeric_limits<float>::infinity();
+    leftIndex = nLasers/2 + desiredNLasers;
+    rightIndex = nLasers/2 - desiredNLasers;
+
     nLasers = (msg->angle_max - msg->angle_min) / msg->angle_increment;
     desiredNLasers = desiredAngle*M_PI / (180*msg->angle_increment);
     ROS_INFO("Size of laser scan array: %i and size of offset: %i", nLasers, desiredNLasers);
@@ -125,14 +171,14 @@ void environmentSearch::laserCallback(const sensor_msgs::LaserScan::ConstPtr& ms
             maxLaserDist = std::max(maxLaserDist, msg->ranges[laser_idx]);
         }
 // right
-        for (uint32_t laser_idx = 0; laser_idx < nLasers / 2 - desiredNLasers; ++laser_idx){
-            // minLaserDist = std::min(minLaserDist, msg->ranges[laser_idx]);
-            rightMaxLaserDist = std::max(maxLaserDist, msg->ranges[laser_idx]);
+        for (uint32_t laser_idx = 0; laser_idx < rightIndex; ++laser_idx){
+            minRightLaserDist = std::min(minRightLaserDist, msg->ranges[laser_idx]);
+            maxRightLaserDist = std::max(maxRightLaserDist, msg->ranges[laser_idx]);
         }
 // left
-        for (uint32_t laser_idx = nLasers/2+ desiredNLasers; laser_idx < nLasers; ++laser_idx){
-            // minLaserDist = std::min(minLaserDist, msg->ranges[laser_idx]);
-            leftMaxLaserDist = std::max(maxLaserDist, msg->ranges[laser_idx]);
+        for (uint32_t laser_idx = leftIndex; laser_idx < nLasers; ++laser_idx){
+            minLeftLaserDist = std::min(minLeftLaserDist, msg->ranges[laser_idx]);
+            maxLeftLaserDist = std::max(maxLeftLaserDist, msg->ranges[laser_idx]);
         }
 
     }

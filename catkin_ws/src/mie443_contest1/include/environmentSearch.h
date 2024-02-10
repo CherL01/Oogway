@@ -33,15 +33,34 @@ class environmentSearch {
         
         float posX = 0.0, posY = 0.0, yaw = 0.0;
         uint8_t bumper[3] = {kobuki_msgs::BumperEvent::RELEASED, kobuki_msgs::BumperEvent::RELEASED, kobuki_msgs::BumperEvent::RELEASED}; // Global variable to store bumper state
+        
+        // Lasers
         float minLaserDist = std::numeric_limits<float>::infinity();
-        float leftMaxLaserDist = 0.0;
-        float rightMaxLaserDist = 0.0;
-        float maxLaserDist = 0.0;
-        int32_t nLasers=0, desiredNLasers=0, desiredAngle=15; // Global variable to store values from laser callback
+        float minLeftLaserDist = std::numeric_limits<float>::infinity();
+        float minRightLaserDist = std::numeric_limits<float>::infinity();
 
-        void envSearchMain();
+        float maxLeftLaserDist = 0.0;
+        float maxRightLaserDist = 0.0;
+        float maxLaserDist = 0.0;
+        
+        int32_t nLasers=0, desiredNLasers=0, desiredAngle=15; // Global variable to store values from laser callback
+        int leftIndex;
+        int rightIndex;
+
+        // Limits and Thresholds
+        float wallLimit = 0.5;
+        float yawAdjustment = 0.0;
+        float linearAdjustment = 0.0;
+
+        // Controller
+        float kp = 0.5;
+        void pController(float minLeftDist, float minRightDist, float leftIndex, float rightIndex, float kp);
+        
+
+        void envSearchMain(uint64_t secondsElapsed);
 
         void avoidWall();
+        void randomScan(float angular, float linear);
 
         void publishVelocity(float angular, float linear);
 

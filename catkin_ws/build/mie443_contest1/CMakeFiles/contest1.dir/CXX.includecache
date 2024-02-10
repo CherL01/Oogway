@@ -6,6 +6,28 @@
 
 #IncludeRegexTransform: 
 
+/home/hqi-oogway/Oogway/catkin_ws/src/mie443_contest1/include/environmentSearch.h
+ros/console.h
+-
+ros/ros.h
+/home/hqi-oogway/Oogway/catkin_ws/src/mie443_contest1/include/ros/ros.h
+geometry_msgs/Twist.h
+-
+kobuki_msgs/BumperEvent.h
+-
+sensor_msgs/LaserScan.h
+-
+nav_msgs/Odometry.h
+-
+tf/transform_datatypes.h
+-
+stdio.h
+-
+cmath
+-
+chrono
+-
+
 /home/hqi-oogway/Oogway/catkin_ws/src/mie443_contest1/src/contest1.cpp
 ros/console.h
 -
@@ -27,6 +49,8 @@ cmath
 -
 chrono
 -
+environmentSearch.h
+/home/hqi-oogway/Oogway/catkin_ws/src/mie443_contest1/src/environmentSearch.h
 
 /opt/ros/kinetic/include/geometry_msgs/Point.h
 string
