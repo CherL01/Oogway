@@ -18,6 +18,11 @@ generate_messages(DEPENDENCIES sensor_msgs kobuki_msgs)
 
 catkin_package()
 
+file(GLOB src_files
+	"${PROJECT_SOURCE_DIR}/include/*.h"
+	"${PROJECT_SOURCE_DIR}/src/*.cpp"
+)
+
 include_directories(include ${OpenCV_INCLUDE_DIRS} ${catkin_INCLUDE_DIRS})
 
 # add the publisher example
