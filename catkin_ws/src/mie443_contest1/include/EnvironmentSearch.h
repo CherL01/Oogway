@@ -23,7 +23,7 @@
 
 using namespace std;
 
-class environmentSearch {
+class EnvironmentSearch {
 
     private:
         // hi
@@ -60,7 +60,7 @@ class environmentSearch {
         void envSearchMain(uint64_t secondsElapsed);
 
         void avoidWall();
-        void randomScan(float angular, float linear);
+        void randomScan();
 
         void publishVelocity(float angular, float linear);
 
@@ -71,12 +71,12 @@ class environmentSearch {
     public:
         // hey
         
-        environmentSearch() {
+        EnvironmentSearch() {
             cout << "Class created" << endl;
             
-            bumper_sub = nh.subscribe("mobile_base/events/bumper", 10, &environmentSearch::bumperCallback, this);
-            laser_sub = nh.subscribe("scan", 10, &environmentSearch::laserCallback, this);
-            odom = nh.subscribe("odom", 1, &environmentSearch::odomCallback, this);
+            bumper_sub = nh.subscribe("mobile_base/events/bumper", 10, &EnvironmentSearch::bumperCallback, this);
+            laser_sub = nh.subscribe("scan", 10, &EnvironmentSearch::laserCallback, this);
+            odom = nh.subscribe("odom", 1, &EnvironmentSearch::odomCallback, this);
 
             vel_pub = nh.advertise<geometry_msgs::Twist>("cmd_vel_mux/input/teleop", 1);
   

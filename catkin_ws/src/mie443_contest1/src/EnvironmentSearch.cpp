@@ -1,14 +1,14 @@
-#include "environmentSearch.h"
+#include "EnvironmentSearch.h"
 
 // PUBLIC//
 
-void environmentSearch::setup() {
+void EnvironmentSearch::setup() {
     // Setting up
     ROS_INFO("Setting up...");
 
 }
 
-void environmentSearch::search(uint64_t secondsElapsed) {
+void EnvironmentSearch::search(uint64_t secondsElapsed) {
     // main search code
     ROS_INFO("Searching...");
     ros::spinOnce();
@@ -21,7 +21,7 @@ void environmentSearch::search(uint64_t secondsElapsed) {
 ////////   MAIN CODE   ////////////
 ///////////////////////////////////
 
-void environmentSearch::envSearchMain(uint64_t secondsElapsed) {
+void EnvironmentSearch::envSearchMain(uint64_t secondsElapsed) {
     // Process a single round of callbacks
     ros::spinOnce();
 
@@ -31,23 +31,23 @@ void environmentSearch::envSearchMain(uint64_t secondsElapsed) {
 
     // Spin at the start, spin once in a while
     if (secondsElapsed <= 20) {
-        randomScan(angular, linear);
+        //randomScan();
 
     } else if (secondsElapsed >= 20 && secondsElapsed < 30) {
         angular = -1*angular;
-        randomScan(angular, linear);
+        ////randomScan();
 
     } else if (secondsElapsed >= 120 && secondsElapsed < 150) {
-        randomScan(angular, linear);
+        ////randomScan();
 
     } else if (secondsElapsed >= 210 && secondsElapsed < 240) {
-        randomScan(angular, linear);
+        ////randomScan();
 
     } else if (secondsElapsed >= 300 && secondsElapsed < 330) {
-        randomScan(angular, linear);
+        ////randomScan();
 
     } else if (secondsElapsed >= 390 && secondsElapsed < 420) {
-        randomScan(angular, linear);
+        ////randomScan();
 
     } 
 
@@ -56,11 +56,11 @@ void environmentSearch::envSearchMain(uint64_t secondsElapsed) {
         angular = pController(minLeftDist, minRightDist, leftIndex, rightIndex, kp);
         
     } else if (minLaserDist < wallLimit) {
-        randomScan();
+        //randomScan();
         linear = 0.1;
 
     } else {
-        avoidWall();
+        //avoidWall();
     }
 
 
@@ -95,15 +95,16 @@ void environmentSearch::envSearchMain(uint64_t secondsElapsed) {
 //////   MAIN CODE ENDS   /////////
 ///////////////////////////////////
 
-void environmentSearch::randomScan(float angular, float linear) {
+/*
+void EnvironmentSearch::randomScan() {
     
     // Turn in place
-    angular = 0.3;
-    linear = 0.0;
+    float angular = 0.3;
+    float linear = 0.0;
     publishVelocity(angular, linear);
 }
-
-void environmentSearch::publishVelocity(float angular, float linear) {
+*/
+void EnvironmentSearch::publishVelocity(float angular, float linear) {
     // Publish velocity values
     vel.angular.z = angular;
     vel.linear.x = linear;
@@ -114,7 +115,7 @@ void environmentSearch::publishVelocity(float angular, float linear) {
 }
 
 /* feb 9
-void environmentSearch::pController(float minLeftDist, float minRightDist, float leftIndex, float rightIndex, float kp) {
+void EnvironmentSearch::pController(float minLeftDist, float minRightDist, float leftIndex, float rightIndex, float kp) {
     float angular = 0.0;
     float laserDiff = minLeftDist - minRightDist;
     float indexDiff = leftIndex - rightIndex;
@@ -128,8 +129,8 @@ void environmentSearch::pController(float minLeftDist, float minRightDist, float
     return angular;
 
 }
-*/
-void environmentSearch::avoidWall() {
+
+void EnvironmentSearch::avoidWall() {
     
     float currentWallDist = minLaserDist;
 
@@ -147,14 +148,14 @@ void environmentSearch::avoidWall() {
     publishVelocity(yawAdjustment,linearAdjustment);
 
 }
-
-void environmentSearch::bumperCallback(const kobuki_msgs::BumperEvent::ConstPtr& msg)
+*/
+void EnvironmentSearch::bumperCallback(const kobuki_msgs::BumperEvent::ConstPtr& msg)
 {
 	// Access using bumper[kobuki_msgs::BumperEvent::{}] LEFT, CENTER, or RIGHT
     bumper[msg->bumper] = msg->state;
 }
 
-void environmentSearch::laserCallback(const sensor_msgs::LaserScan::ConstPtr& msg)
+void EnvironmentSearch::laserCallback(const sensor_msgs::LaserScan::ConstPtr& msg)
 {
 	maxLaserDist = 0.0;
     minLaserDist = std::numeric_limits<float>::infinity();
@@ -190,7 +191,7 @@ void environmentSearch::laserCallback(const sensor_msgs::LaserScan::ConstPtr& ms
     }
 }
 
-void environmentSearch::odomCallback (const nav_msgs::Odometry::ConstPtr& msg)
+void EnvironmentSearch::odomCallback (const nav_msgs::Odometry::ConstPtr& msg)
 {
     posX = msg->pose.pose.position.x;           // Set the robot’s (X, Y) position along with its orientation
     posY = msg->pose.pose.position.y;

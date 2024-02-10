@@ -6,7 +6,7 @@
 
 #IncludeRegexTransform: 
 
-/home/hqi-oogway/Oogway/catkin_ws/src/mie443_contest1/include/environmentSearch.h
+/home/hqi-oogway/Oogway/catkin_ws/src/mie443_contest1/include/EnvironmentSearch.h
 ros/console.h
 -
 ros/ros.h
@@ -49,8 +49,8 @@ cmath
 -
 chrono
 -
-environmentSearch.h
-/home/hqi-oogway/Oogway/catkin_ws/src/mie443_contest1/src/environmentSearch.h
+EnvironmentSearch.h
+/home/hqi-oogway/Oogway/catkin_ws/src/mie443_contest1/src/EnvironmentSearch.h
 
 /opt/ros/kinetic/include/geometry_msgs/Point.h
 string

@@ -11,7 +11,7 @@
 
 #include <chrono>
 
-#include "environmentSearch.h"
+#include "EnvironmentSearch.h"
 
 ///////////////////////////////////
 ////////   MAIN CODE   ////////////
@@ -35,7 +35,7 @@ int main(int argc, char **argv)
     start = std::chrono::system_clock::now();
     uint64_t secondsElapsed = 0;
     
-    environmentSearch ES;
+    EnvironmentSearch ES;
     ES.setup();
 
     while(ros::ok() && secondsElapsed <= 480) {
