@@ -4,6 +4,7 @@ set(CMAKE_DEPENDS_LANGUAGES
   )
 # The set of files for implicit dependencies of each language:
 set(CMAKE_DEPENDS_CHECK_CXX
+  "/home/hqi-oogway/Oogway/catkin_ws/src/mie443_contest1/src/EnvironmentSearch.cpp" "/home/hqi-oogway/Oogway/catkin_ws/build/mie443_contest1/CMakeFiles/contest1.dir/src/EnvironmentSearch.cpp.o"
   "/home/hqi-oogway/Oogway/catkin_ws/src/mie443_contest1/src/contest1.cpp" "/home/hqi-oogway/Oogway/catkin_ws/build/mie443_contest1/CMakeFiles/contest1.dir/src/contest1.cpp.o"
   )
 set(CMAKE_CXX_COMPILER_ID "GNU")
@@ -22,6 +23,7 @@ set(CMAKE_CXX_TARGET_INCLUDE_PATH
   "/opt/ros/kinetic/include/opencv-3.3.1-dev/opencv"
   "/opt/ros/kinetic/include"
   "/opt/ros/kinetic/share/xmlrpcpp/cmake/../../../include/xmlrpcpp"
+  "/home/hqi-oogway/Oogway/catkin_ws/src/mie443_contest1"
   )
 
 # Targets to which this target links.

@@ -26,11 +26,12 @@ using namespace std;
 class EnvironmentSearch {
 
     private:
-        // hi
+        // 
         ros::NodeHandle nh;
         ros::Publisher vel_pub;
         ros::Subscriber bumper_sub, laser_sub, odom;
-        
+        geometry_msgs::Twist vel;
+
         float posX = 0.0, posY = 0.0, yaw = 0.0;
         uint8_t bumper[3] = {kobuki_msgs::BumperEvent::RELEASED, kobuki_msgs::BumperEvent::RELEASED, kobuki_msgs::BumperEvent::RELEASED}; // Global variable to store bumper state
         
@@ -54,7 +55,7 @@ class EnvironmentSearch {
 
         // Controller
         float kp = 0.5;
-        void pController(float minLeftDist, float minRightDist, float leftIndex, float rightIndex, float kp);
+        float pController(float minLeftDist, float minRightDist, float leftIndex, float rightIndex, float kp);
         
 
         void envSearchMain(uint64_t secondsElapsed);
@@ -69,7 +70,6 @@ class EnvironmentSearch {
         void odomCallback(const nav_msgs::Odometry::ConstPtr& msg);
 
     public:
-        // hey
         
         EnvironmentSearch() {
             cout << "Class created" << endl;

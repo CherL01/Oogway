@@ -28,7 +28,7 @@ int main(int argc, char **argv)
     // ros::Publisher vel_pub = nh.advertise<geometry_msgs::Twist>("cmd_vel_mux/input/teleop", 1);
 
     ros::Rate loop_rate(50);
-    geometry_msgs::Twist vel;
+    
 
     // contest count down timer
     std::chrono::time_point<std::chrono::system_clock> start;

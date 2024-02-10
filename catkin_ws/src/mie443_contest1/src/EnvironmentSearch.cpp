@@ -53,7 +53,7 @@ void EnvironmentSearch::envSearchMain(uint64_t secondsElapsed) {
 
     // Default movement
     if (minLaserDist > wallLimit) {
-        angular = pController(minLeftDist, minRightDist, leftIndex, rightIndex, kp);
+        angular = pController(minLeftLaserDist, minRightLaserDist, leftIndex, rightIndex, kp);
         
     } else if (minLaserDist < wallLimit) {
         //randomScan();
@@ -114,8 +114,8 @@ void EnvironmentSearch::publishVelocity(float angular, float linear) {
     ros::spinOnce();
 }
 
-/* feb 9
-void EnvironmentSearch::pController(float minLeftDist, float minRightDist, float leftIndex, float rightIndex, float kp) {
+
+float EnvironmentSearch::pController(float minLeftDist, float minRightDist, float leftIndex, float rightIndex, float kp) {
     float angular = 0.0;
     float laserDiff = minLeftDist - minRightDist;
     float indexDiff = leftIndex - rightIndex;
@@ -129,7 +129,7 @@ void EnvironmentSearch::pController(float minLeftDist, float minRightDist, float
     return angular;
 
 }
-
+/*
 void EnvironmentSearch::avoidWall() {
     
     float currentWallDist = minLaserDist;

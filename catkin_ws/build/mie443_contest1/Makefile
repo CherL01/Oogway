@@ -870,6 +870,33 @@ mie443_contest1_genpy/fast:
 	cd /home/hqi-oogway/Oogway/catkin_ws/build && $(MAKE) -f mie443_contest1/CMakeFiles/mie443_contest1_genpy.dir/build.make mie443_contest1/CMakeFiles/mie443_contest1_genpy.dir/build
 .PHONY : mie443_contest1_genpy/fast
 
+src/EnvironmentSearch.o: src/EnvironmentSearch.cpp.o
+
+.PHONY : src/EnvironmentSearch.o
+
+# target to build an object file
+src/EnvironmentSearch.cpp.o:
+	cd /home/hqi-oogway/Oogway/catkin_ws/build && $(MAKE) -f mie443_contest1/CMakeFiles/contest1.dir/build.make mie443_contest1/CMakeFiles/contest1.dir/src/EnvironmentSearch.cpp.o
+.PHONY : src/EnvironmentSearch.cpp.o
+
+src/EnvironmentSearch.i: src/EnvironmentSearch.cpp.i
+
+.PHONY : src/EnvironmentSearch.i
+
+# target to preprocess a source file
+src/EnvironmentSearch.cpp.i:
+	cd /home/hqi-oogway/Oogway/catkin_ws/build && $(MAKE) -f mie443_contest1/CMakeFiles/contest1.dir/build.make mie443_contest1/CMakeFiles/contest1.dir/src/EnvironmentSearch.cpp.i
+.PHONY : src/EnvironmentSearch.cpp.i
+
+src/EnvironmentSearch.s: src/EnvironmentSearch.cpp.s
+
+.PHONY : src/EnvironmentSearch.s
+
+# target to generate assembly for a file
+src/EnvironmentSearch.cpp.s:
+	cd /home/hqi-oogway/Oogway/catkin_ws/build && $(MAKE) -f mie443_contest1/CMakeFiles/contest1.dir/build.make mie443_contest1/CMakeFiles/contest1.dir/src/EnvironmentSearch.cpp.s
+.PHONY : src/EnvironmentSearch.cpp.s
+
 src/contest1.o: src/contest1.cpp.o
 
 .PHONY : src/contest1.o
@@ -957,6 +984,9 @@ help:
 	@echo "... mie443_contest1_gennodejs"
 	@echo "... actionlib_msgs_generate_messages_lisp"
 	@echo "... mie443_contest1_genpy"
+	@echo "... src/EnvironmentSearch.o"
+	@echo "... src/EnvironmentSearch.i"
+	@echo "... src/EnvironmentSearch.s"
 	@echo "... src/contest1.o"
 	@echo "... src/contest1.i"
 	@echo "... src/contest1.s"
