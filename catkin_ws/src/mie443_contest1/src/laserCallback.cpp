@@ -11,7 +11,6 @@ int32_t nLasers=0, desiredNLasers=0, desiredAngle=15;
 
 void laserCallback(const sensor_msgs::LaserScan::ConstPtr& msg)
 {
-    std::cout << "laser calling..." << std::endl;
 
     minLaserDist = std::numeric_limits<float>::infinity();
     leftLaserDist = std::numeric_limits<float>::infinity();

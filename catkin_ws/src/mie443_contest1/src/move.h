@@ -15,12 +15,12 @@ extern float dist;
 void odomCallback (const nav_msgs::Odometry::ConstPtr& msg);
 
 //functions to turn
-void turnCCW (float& targetYaw, float& angular, float& linear, float& remainingYaw);
-void turnCW (float& targetYaw, float& angular, float& linear, float& remainingYaw);
+void turnCCW (float& targetYaw, float& angular, float& linear, float& remainingYaw, float& turtleAngle);
+void turnCW (float& targetYaw, float& angular, float& linear, float& remainingYaw, float& turtleAngle);
 
 //check functions to see if turn completed - run while moving
-void checkTurnCCW (float& targetYaw, float& angular, float& linear, float& remainingYaw);
-void checkTurnCW (float& targetYaw, float& angular, float& linear, float& remainingYaw);
+void checkTurnCCW (float& targetYaw, float& angular, float& linear, float& remainingYaw, float& turtleAngle);
+void checkTurnCW (float& targetYaw, float& angular, float& linear, float& remainingYaw, float& turtleAngle);
 
 //functions to move
 void moveFront (float& targetDist, float& currentX, float& currentY, float& angular, float& linear, float& turtleSpeed);

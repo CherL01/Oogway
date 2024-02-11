@@ -3,51 +3,37 @@
 #include "move.cpp"
 #include "bumper.cpp"
 
-//state globals
-//WORKING CODE
-bool local = false;
+bool local = true;
+
+//// Initialize states & loop counts
 bool isMoving = false;
-
-int TRAVEL_STEP = 1;
-int SCAN_STEP = 0;
-
-int travelCount = 0;
-int bumperCount = 0;
 
 int stepsCount = 0;
 int subStepsCount = 0;
+int travelLoop = 0;
+uint64_t travelTimeLimit = 12;
 
-//uint8_t is a boolean variable
 
-
-//float is 32-bit decimal 
-
-//float dist = 0.0;
+//// Initialize variables for movement
 float targetDist = 0.0;
-//float remainingDist = 0.0;
 
 float currentX = 0.0;
 float currentY = 0.0;
 
 float openYaw = 0.0;
 
-float maxLaserDist = 0.0;
-
-int travelLoop = 0;
-int travelLoopLimit = 10;
+float turnAngle = 10.0; 
 
 float turtleSpeed = 0.0;
+float turtleAngle = 0.0;
 
+float maxLaserDist = 0.0; //variable to store recorded yaw during travel
+
+//// Timer variables to record travel time
 uint64_t travelElapsed = 0;
-
 std::chrono::time_point<std::chrono::system_clock> travelStart;
 
-float turnAngle = 10.0;
-
-
-
-
-
+ 
 
 int main(int argc, char **argv)
 {
@@ -65,44 +51,39 @@ int main(int argc, char **argv)
 
     geometry_msgs::Twist vel;
 
-    //contest countdown timer
+    // Contest countdown timer
 
     std::chrono::time_point<std::chrono::system_clock> start;
     start = std::chrono::system_clock::now();
     uint64_t secondsElapsed = 0;
 
-
+    // Initiallize angular and linear velocities
     float angular = 0.0;
     float linear = 0.0;
 
-    int turning = 0;
+    // Initialize to scan state & substate 0
+    stepsCount = SCAN_STEP;
+    subStepsCount = 0;
 
-    //print statement to differentiate local & oogway
+    // Print statement to differentiate local and github repositories
         
-    if (local)
-    {
-        ROS_INFO("This is Local, not uploaded to github");
-    }
-    else
-    {
-        ROS_INFO("This is Oogway, uploaded to github");
-    }
+    if (local) ROS_INFO("This is Local, not uploaded to github");
+    else ROS_INFO("This is Oogway, uploaded to github");
 
 
     while(ros::ok() && secondsElapsed <= 480) {
 
         ros::spinOnce();
-
-        ROS_INFO("substep: %d", subStepsCount);
-
+        ROS_INFO("Substep: %d", subStepsCount);
 
         //PRELIMINARY CHECKINGS
-        //check if movement is complete
+
+        //// Check if movement is complete
 
         isMoving = (angular != 0.0 || linear != 0.0);
         ROS_INFO("Angular speed: %f, Linear speed: %f", angular, linear);
 
-        //check if bumper is hit -> might need to add this to the moving function
+        //// Check if bumper is hit
 
         bool anyBumperPressed = false;
         for (uint32_t b_idx = 0; b_idx < N_BUMPER; ++b_idx) {
@@ -111,27 +92,30 @@ int main(int argc, char **argv)
 
         ROS_INFO("Bumper is pressed: %d", anyBumperPressed);
 
-        //check for speed limit
+        //// Check for speed limit
+
         if (leftLaserDist < slowDownLimit || rightLaserDist < slowDownLimit || minLaserDist < slowDownLimit)
         {
             turtleSpeed = slowDown;
+            turtleAngle = slowDownAngular;
+            uint64_t travelTimeLimit = 30;
+
             ROS_INFO("SLOWING DOWN...");
         }
 
         else 
         {
             turtleSpeed = normal;
+            turtleAngle = normalAngular;
+            uint64_t travelTimeLimit = 15;
             ROS_INFO("NORMAL SPEED");
         }
 
         //ADDING RANDOMNESS TO MOVEMENT -> SCAN every interval, after travelling for certain intervals, gittering at corners
-        //scan at 300 & 450
-        if (secondsElapsed % 150 == 0 && secondsElapsed != 0 && secondsElapsed != 150)
-        {
-            subStepsCount = 0;
-            stepsCount = SCAN_STEP;
-            turnAngle = 15.0;
-        }
+        
+
+        ////if too much gittering, turnAngle = 10 again & scan
+
 
         //When Oogway is stationary, give directions
         if (!isMoving)
@@ -140,60 +124,56 @@ int main(int argc, char **argv)
 
             if (stepsCount == SCAN_STEP)
             {
+
                 ROS_INFO("SCANNING...");
 
-                if (subStepsCount == 0) 
-                [
-                    ROS_INFO("Correcting Yaw! Current Yaw: %f", yaw); // correcting yaw:it initially is 0
-                    subStepsCount++;
-                ]
-                
+                if (subStepsCount == 0) subStepsCount++; //skip first loop as yaw isn't updated yet
                 
                 else if (subStepsCount == 1) // initially turn 180 ccw
                 {
-                    //targetYaw = yaw +180;
-                    //turnCCW(targetYaw, angular, linear, remainingYaw);
+                    targetYaw = yaw +180;
+                    turnCCW(targetYaw, angular, linear, remainingYaw, turtleAngle);
 
-                    ///* comment block for 
-                    //test 1
-                    currentX = posX;
-                    currentY = posY;
-                    targetDist = 0.01; //0.01, 0.05, 0.1, 0.2
-                    moveFront(targetDist, currentX, currentY, angular, linear, turtleSpeed);
-
-                    //test 2
-                    targetYaw = yaw +90; //90, 450, 10, 15 
-                    turnCCW(targetYaw, angular, linear, remainingYaw);
-                    
-                    //*/
                     subStepsCount++;
                     
                 } 
 
                 else if (subStepsCount == 2) // turn another 180 ccw for 1 full loop
                 {
-                    //*/
                     targetYaw = yaw +180;
-                    turnCCW(targetYaw, angular, linear, remainingYaw);
-//*/
+                    turnCCW(targetYaw, angular, linear, remainingYaw, turtleAngle);
 
                     subStepsCount++;
                 }
 
                 else if (subStepsCount == 3)
                 {
-                    ///* comment block for test
                     targetYaw = openYaw;
-                    turnCCW(targetYaw, angular, linear, remainingYaw);
 
-                    //*/
+                    // Turn action to turn to open yaw - fastest action (CCW or CW)
+                    //turnCCW(targetYaw, angular, linear, remainingYaw);
+                    
+                    //NEED TO FIX!
+                    if (targetYaw > yaw)
+                    {
+                        if (yaw < 180 && yaw+360 - targetYaw < 180) turnCW(targetYaw, angular, linear, remainingYaw, turtleAngle);
+                        else turnCCW(targetYaw, angular, linear, remainingYaw, turtleAngle);
+                    }
+
+                    else 
+                    {
+                        if (yaw >= 180 && targetYaw+360 - yaw < 180) turnCCW(targetYaw, angular, linear, remainingYaw, turtleAngle);
+                        else turnCW(targetYaw, angular, linear, remainingYaw, turtleAngle);
+                    }
+                    
+                    
+
                     subStepsCount = 0;
                     stepsCount = TRAVEL_STEP;
                     maxLaserDist = 0.0;
                     ROS_INFO("Entering Travel mode");
 
-                    std::chrono::time_point<std::chrono::system_clock> travelStart;
-                    travelStart = std::chrono::system_clock::now();
+
                     travelLoop = 0;
                     
                 }
@@ -203,65 +183,70 @@ int main(int argc, char **argv)
 
             else if (stepsCount == TRAVEL_STEP)
             {
-                
 
                 ROS_INFO("TRAVELLING...");
-                std::cout << "Time Elapsed:" << std:: endl;
-                std::cout << travelElapsed;
-                if (leftLaserDist > stopLimit && minLaserDist > stopLimit && rightLaserDist > stopLimit)
-                // cleared from stoplimit
+                if (subStepsCount == 0)
                 {
-                    currentX = posX;
-                    currentY = posY;
-                    targetDist = 0.01;
-                    moveFront(targetDist, currentX, currentY, angular, linear, turtleSpeed);
-                    travelLoop = 0;
-                    subStepsCount = 0;
+                    travelStart = std::chrono::system_clock::now();
+                    subStepsCount++;
                 }
-                else 
+
+                else if (subStepsCount == 1) //give travel instructions
                 {
-                    ROS_INFO("STOP MOTION OCCURED!");
-                    ROS_INFO("Travel Loop: %d", travelLoop);
-                    //break;
+                    linear = turtleSpeed; //go straight
+                    angular = 0.0;
+                    
+                }
+                else if (subStepsCount == 2) // STOP LIMIT: instruct to turn left or right
+                {
                     if (travelLoop >= travelLoopLimit)
                     {
                         ROS_INFO("Too much Gittering");
                         subStepsCount = 0;
                         stepsCount = SCAN_STEP;
+                        turnAngle = 10;
                     }
 
-                    if (subStepsCount == 0)
+                    /// rotate if travel loop limit not reached
+                    else if (leftLaserDist > rightLaserDist)
                     {
-                        linear = 0;
-                        angular = 0;
-                        subStepsCount++;
+                        targetYaw = yaw +turnAngle;
+                        turnCCW(targetYaw, angular, linear, remainingYaw, turtleAngle);
+                        travelLoop++;
+                        
                     }
-                    
+
                     else
                     {
-                        if (leftLaserDist > rightLaserDist)
-                        {
-                            targetYaw = yaw +turnAngle;
-                            turnCCW(targetYaw, angular, linear, remainingYaw);
-                            travelLoop++;
-                        }
-
-                        else
-                        {
-                            targetYaw = yaw -turnAngle;
-                            turnCW(targetYaw, angular, linear, remainingYaw);
-                            travelLoop++;
-                        }
+                        targetYaw = yaw -turnAngle;
+                        turnCW(targetYaw, angular, linear, remainingYaw, turtleAngle);
+                        travelLoop++;
                     }
 
-                    
-                    ROS_INFO("Travel Loop: %d", travelLoop);
                 }
+
+                else if (subStepsCount == 3)
+                {
+                    ROS_INFO("!!!!!!!!!!!!!!!TIME LIMIT!!!!!!!!!!!!!");
+                    targetYaw = yaw +180;
+                    turnCCW(targetYaw, angular, linear, remainingYaw, turtleAngle);
+                    subStepsCount++;
+                }
+
+                else if (subStepsCount == 5)
+                {
+                    targetYaw = yaw +180;
+                    turnCCW(targetYaw, angular, linear, remainingYaw, turtleAngle);
+                    subStepsCount++;
+                }
+
+            
 
             }
         }
 
-        else if (anyBumperPressed) //when bumper is hit, stop and move back. (bumper usually hit when moving)
+        //When bumper is hit while moving, stop and move back
+        else if (anyBumperPressed)
             {
                 ROS_INFO("BANG!!! Bumper Pressed");
                 
@@ -275,10 +260,80 @@ int main(int argc, char **argv)
 
             }
 
-        //laser limit in else ifelse if ()
+        // TRAVEL STATE: laser limit in else ifelse if ()
+        else if (stepsCount == TRAVEL_STEP)
+        {
+            ROS_INFO("Travelling...");
+            if (travelElapsed > travelTimeLimit && secondsElapsed > 300)
+                {
+                    travelElapsed = 0.0;
+                    subStepsCount = 3;
+                    linear = 0.0;
+                    angular = 0.0;
+                }
 
 
-        else //isMoving
+
+            if (subStepsCount == 0)
+            {
+                //complete scanning motion
+                if (angular > 0) checkTurnCCW(targetYaw, angular, linear, remainingYaw, turtleAngle);
+                else checkTurnCW(targetYaw, angular, linear, remainingYaw, turtleAngle);
+            }
+            // LaserScan detection
+            if (subStepsCount == 1)
+            {
+                if (leftLaserDist < stopLimit || minLaserDist < stopLimit || rightLaserDist < stopLimit) 
+                {
+                    subStepsCount++;
+                    angular = 0.0;
+                    linear = 0.0;
+                }
+            }
+
+            else if (subStepsCount == 2)
+            {
+                //travelLoop++;
+
+                if (angular != 0)
+                {
+                    if (angular > 0) checkTurnCCW(targetYaw, angular, linear, remainingYaw, turtleAngle);
+                    else checkTurnCW(targetYaw, angular, linear, remainingYaw, turtleAngle);
+                } 
+
+
+                // Go back to travelling state if laser scan clears
+                if (leftLaserDist > clearLimit && minLaserDist > clearLimit && rightLaserDist > clearLimit)
+                {
+                    angular = 0.0;
+                    linear = 0.0;
+                    subStepsCount--;
+                    travelLoop = 0;
+                    travelStart = std::chrono::system_clock::now();
+                }
+
+                
+            }
+
+            else if (subStepsCount == 4)
+            {
+                ROS_INFO("TURNING AFTER TIME LIMIT REACHED");
+                checkTurnCCW(targetYaw, angular, linear, remainingYaw, turtleAngle);
+                
+                if (angular==0) subStepsCount++;
+            }
+
+            else if (subStepsCount == 6)
+            {
+                checkTurnCCW(targetYaw, angular, linear, remainingYaw, turtleAngle);
+                if (angular==0) subStepsCount = 0;
+            }
+
+
+        }
+
+        //isMoving
+        else 
         {
             //ROS_INFO("Remaining yaw outside checkturn: %f", remainingYaw);
             //CHECK IF MOVEMENT IS DONE
@@ -301,28 +356,15 @@ int main(int argc, char **argv)
             
             if (linear != 0)
             {
-                if (linear > 0) 
-                {
-                    checkMoveFront(targetDist, currentX, currentY, angular, linear, turtleSpeed);
-                    
-                }
-                else 
-                {
-                    checkMoveBack(targetDist, currentX, currentY, angular, linear, turtleSpeed);
-
-                }
-
-                
+                if (linear > 0) checkMoveFront(targetDist, currentX, currentY, angular, linear, turtleSpeed);
+                else checkMoveBack(targetDist, currentX, currentY, angular, linear, turtleSpeed);
             }
 
             if (angular != 0)
             {
-                if (angular > 0) checkTurnCCW(targetYaw, angular, linear, remainingYaw);
-                else checkTurnCW(targetYaw, angular, linear, remainingYaw);
-
-            }
-        
-        
+                if (angular > 0) checkTurnCCW(targetYaw, angular, linear, remainingYaw, turtleAngle);
+                else checkTurnCW(targetYaw, angular, linear, remainingYaw, turtleAngle);
+            }       
         }
       
 
@@ -332,15 +374,24 @@ int main(int argc, char **argv)
 
 
         //Update timer of elapsed travel time
-        if (stepsCount == TRAVEL_STEP)
+        if (stepsCount == TRAVEL_STEP && subStepsCount > 0 && subStepsCount < 3)
         {
             travelElapsed = std::chrono::duration_cast<std::chrono::seconds>(std::chrono::system_clock::now()-travelStart).count();
         }
+        if (stepsCount == TRAVEL_STEP && subStepsCount == 2)
+        {
+            travelElapsed = 0;
+        }
         
-        // The last thing to do is to update the timer.
+        //Update the timer
         secondsElapsed = std::chrono::duration_cast<std::chrono::seconds>(std::chrono::system_clock::now()-start).count();
         std::cout << "Time Elapsed:" << std:: endl;
-        std::cout << secondsElapsed;
+        std::cout << secondsElapsed << std:: endl;
+        std::cout << "Travel Time Elapsed:" << std:: endl;
+        std::cout << travelElapsed << std::endl;
+        std::cout << "Travel Loop:" << std:: endl;
+        std::cout << travelLoop << std::endl;
+        
         loop_rate.sleep();
         }
 

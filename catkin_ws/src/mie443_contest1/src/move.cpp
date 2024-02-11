@@ -1,6 +1,7 @@
 #include "move.h"
 
 float posX=0.0, posY=0.0, yaw=0.0;
+
 float remainingYaw = std::numeric_limits<float>::infinity();
 float targetYaw = std::numeric_limits<float>::infinity();
 
@@ -26,7 +27,7 @@ void odomCallback (const nav_msgs::Odometry::ConstPtr& msg)
 }
 
 //function to turn counterclockwise
-void turnCCW (float& targetYaw, float& angular, float& linear, float& remainingYaw)
+void turnCCW (float& targetYaw, float& angular, float& linear, float& remainingYaw, float& turtleAngle)
 {
     //correct any out of bounds for targetYaw
 
@@ -52,7 +53,7 @@ void turnCCW (float& targetYaw, float& angular, float& linear, float& remainingY
     //ROS_INFO("Remaining Yaw: %f", remainingYaw); 
 
     ///* logic to check ismovingis done 
-    if(remainingYaw <= 0.0) //stop once remaining is less than 0
+    if(remainingYaw <= 0.0 || abs(yaw-targetYaw) < 4) //stop once remaining is less than 0
     {
         angular = 0.0;
         linear = 0.0;
@@ -63,7 +64,7 @@ void turnCCW (float& targetYaw, float& angular, float& linear, float& remainingY
 
     else //keep rotating as long as there is remaining yaw
     {
-        angular = M_PI/6;
+        angular = turtleAngle;
         linear = 0.0;
         //ROS_INFO("Turning CCW... remaining: %f", remainingYaw);
     } //logic to ~~ */
@@ -71,7 +72,7 @@ void turnCCW (float& targetYaw, float& angular, float& linear, float& remainingY
 }
 
 //function to turn clockwise
-void turnCW (float& targetYaw, float& angular, float& linear, float& remainingYaw)
+void turnCW (float& targetYaw, float& angular, float& linear, float& remainingYaw, float& turtleAngle)
 {
 
     //correct any out of bounds for targetYaw
@@ -92,7 +93,7 @@ void turnCW (float& targetYaw, float& angular, float& linear, float& remainingYa
 
     remainingYaw = yaw - targetYaw;
 
-    if(remainingYaw <= 0.0) //stop once remaining is less than 0
+    if(remainingYaw <= 0.0 || abs(yaw-targetYaw) < 4) //stop once remaining is less than 0
     {
         angular = 0.0;
         linear = 0.0;
@@ -102,13 +103,13 @@ void turnCW (float& targetYaw, float& angular, float& linear, float& remainingYa
 
     else //keep rotating as long as there is remaining yaw
     {
-        angular = -M_PI/6;
+        angular = -turtleAngle;
         linear = 0.0;
         //ROS_INFO("Turning CW... remaining: %f", remainingYaw);
     }
 }
 
-void checkTurnCCW (float& targetYaw, float& angular, float& linear, float& remainingYaw)
+void checkTurnCCW (float& targetYaw, float& angular, float& linear, float& remainingYaw, float& turtleAngle)
 {
     //correct any out of bounds for targetYaw
 
@@ -134,7 +135,7 @@ void checkTurnCCW (float& targetYaw, float& angular, float& linear, float& remai
     ROS_INFO("Remaining Yaw: %f", remainingYaw); 
 
     ///* logic to check ismovingis done 
-    if(remainingYaw <= 0.0) //stop once remaining is less than 0
+    if(remainingYaw <= 0.0 || abs(yaw-targetYaw) < 4) //stop once remaining is less than 0
     {
         angular = 0.0;
         linear = 0.0;
@@ -145,7 +146,7 @@ void checkTurnCCW (float& targetYaw, float& angular, float& linear, float& remai
 
 }
 
-void checkTurnCW (float& targetYaw, float& angular, float& linear, float& remainingYaw)
+void checkTurnCW (float& targetYaw, float& angular, float& linear, float& remainingYaw, float& turtleAngle)
 {
 
     //correct any out of bounds for targetYaw
@@ -166,7 +167,7 @@ void checkTurnCW (float& targetYaw, float& angular, float& linear, float& remain
 
     remainingYaw = yaw - targetYaw;
 
-    if(remainingYaw <= 0.0) //stop once remaining is less than 0
+    if(remainingYaw <= 0.0 || abs(yaw-targetYaw) < 4) //stop once remaining is less than 0
     {
         angular = 0.0;
         linear = 0.0;
