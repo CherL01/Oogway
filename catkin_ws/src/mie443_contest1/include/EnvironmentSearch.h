@@ -16,12 +16,15 @@
 #include <cmath>
 
 #include <chrono>
+#include <thread>
 
 #define N_BUMPER (3)
 #define RAD2DEG(rad) ((rad) * 180. / M_PI)
 #define DEG2RAD(deg) ((deg) * M_PI / 180.)
 
 using namespace std;
+using namespace std::this_thread;
+using namespace std::chrono;
 
 class EnvironmentSearch {
 
@@ -47,21 +50,28 @@ class EnvironmentSearch {
         int32_t nLasers=0, desiredNLasers=0, desiredAngle=15; // Global variable to store values from laser callback
         int leftIndex;
         int rightIndex;
+        int backingUpCounter = 0;
+        float directionArray[4] = {0,M_PI/2,M_PI,M_PI*1.5};
+        int directionIndex = 0;
+
+        // time
+        std::chrono::time_point<std::chrono::system_clock> start = std::chrono::system_clock::now();
+        uint64_t secondsElapsed = 0;
 
         // Limits and Thresholds
         float wallLimit = 0.5;
-        float yawAdjustment = 0.0;
-        float linearAdjustment = 0.0;
+        float currYaw = 0.0;
+        // float yawAdjustment = 0.0;
+        // float linearAdjustment = 0.0;
 
-        // Controller
-        float kp = 0.5;
-        float pController(float minLeftDist, float minRightDist, float leftIndex, float rightIndex, float kp);
+        //// Controller
+        //float kp = 1.5;
+        //float pController(float minLeftDist, float minRightDist, float leftIndex, float rightIndex, float kp, float prevAngular);
         
 
         void envSearchMain(uint64_t secondsElapsed);
 
-        void avoidWall();
-        void randomScan();
+        // float randomScan();
 
         void publishVelocity(float angular, float linear);
 
@@ -82,7 +92,6 @@ class EnvironmentSearch {
   
         }
         
-        void setup();
         void search(uint64_t secondsElapsed);
 
 

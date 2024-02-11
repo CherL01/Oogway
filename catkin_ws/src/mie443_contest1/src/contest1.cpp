@@ -20,6 +20,7 @@
 int main(int argc, char **argv)
 {
     ros::init(argc, argv, "image_listener");
+    ros::NodeHandle nh;
 
     // ros::Subscriber bumper_sub = nh.subscribe("mobile_base/events/bumper", 10, &bumperCallback);
     // ros::Subscriber laser_sub = nh.subscribe("scan", 10, &laserCallback);
@@ -28,7 +29,7 @@ int main(int argc, char **argv)
     // ros::Publisher vel_pub = nh.advertise<geometry_msgs::Twist>("cmd_vel_mux/input/teleop", 1);
 
     ros::Rate loop_rate(50);
-    
+    geometry_msgs::Twist vel;
 
     // contest count down timer
     std::chrono::time_point<std::chrono::system_clock> start;
@@ -36,11 +37,8 @@ int main(int argc, char **argv)
     uint64_t secondsElapsed = 0;
     
     EnvironmentSearch ES;
-    ES.setup();
 
     while(ros::ok() && secondsElapsed <= 480) {
-        // Process a single round of callbacks
-        ros::spinOnce();
         
         // bool any_bumper_pressed = false;
         // for (uint32_t b_idx = 0; b_idx < N_BUMPER; ++b_idx) {
@@ -48,6 +46,7 @@ int main(int argc, char **argv)
         // }
 
         ES.search(secondsElapsed);
+        ROS_INFO("Seconds Elapsed: %u", secondsElapsed);
 
         // The last thing to do is to update the timer.
         secondsElapsed = std::chrono::duration_cast<std::chrono::seconds>(std::chrono::system_clock::now()-start).count();

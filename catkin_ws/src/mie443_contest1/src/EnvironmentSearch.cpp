@@ -2,12 +2,6 @@
 
 // PUBLIC//
 
-void EnvironmentSearch::setup() {
-    // Setting up
-    ROS_INFO("Setting up...");
-
-}
-
 void EnvironmentSearch::search(uint64_t secondsElapsed) {
     // main search code
     ROS_INFO("Searching...");
@@ -22,133 +16,178 @@ void EnvironmentSearch::search(uint64_t secondsElapsed) {
 ///////////////////////////////////
 
 void EnvironmentSearch::envSearchMain(uint64_t secondsElapsed) {
-    // Process a single round of callbacks
-    ros::spinOnce();
-
+    
     float angular = 0.0;
     float linear = 0.0;
     bool turning = false;
 
     // Spin at the start, spin once in a while
     if (secondsElapsed <= 20) {
-        //randomScan();
+        angular = 0.3;
+        linear = 0.0;
 
     } else if (secondsElapsed >= 20 && secondsElapsed < 30) {
-        angular = -1*angular;
-        ////randomScan();
+        angular = -.3;
+        linear = 0.0;
 
-    } else if (secondsElapsed >= 120 && secondsElapsed < 150) {
-        ////randomScan();
+    } else if (secondsElapsed >= 120 && secondsElapsed < 130) {
+        angular = 0.225;
+        linear = 0.0;
+    } else if (secondsElapsed >= 130 && secondsElapsed < 140) {
+        angular = -0.225;
+        linear = 0.0;
 
-    } else if (secondsElapsed >= 210 && secondsElapsed < 240) {
-        ////randomScan();
+    } else if (secondsElapsed >= 200 && secondsElapsed < 220) {
+        angular = 0.225;
+        linear = 0.0;
+    } else if (secondsElapsed >= 220 && secondsElapsed < 230) {
+        angular = -0.225;
+        linear = 0.0;
 
-    } else if (secondsElapsed >= 300 && secondsElapsed < 330) {
-        ////randomScan();
+    } else if (secondsElapsed >= 290 && secondsElapsed < 310) {
+        angular = 0.225;
+        linear = 0.0;
+    } else if (secondsElapsed >= 310 && secondsElapsed < 320) {
+        angular = -0.225;
+        linear = 0.0;
 
-    } else if (secondsElapsed >= 390 && secondsElapsed < 420) {
-        ////randomScan();
-
-    } 
-
-    // Default movement
-    if (minLaserDist > wallLimit) {
-        angular = pController(minLeftLaserDist, minRightLaserDist, leftIndex, rightIndex, kp);
-        
-    } else if (minLaserDist < wallLimit) {
-        //randomScan();
-        linear = 0.1;
+    } else if (secondsElapsed >= 380 && secondsElapsed < 400) {
+        angular = 0.225;
+        linear = 0.0;
+    } else if (secondsElapsed >= 400 && secondsElapsed < 410) {
+        angular = -0.225;
+        linear = 0.0;
 
     } else {
-        //avoidWall();
+        
+        if (minLaserDist >= wallLimit) {
+            if (minLeftLaserDist > minRightLaserDist) {
+                angular = 0.1;
+                linear = 0.175;
+            } else if (minLeftLaserDist <= minRightLaserDist) {
+                angular = -0.125;
+                linear = 0.175;
+            } 
+        
+
+        /*
+        ////////////////// YAW STUFF /////////////////////
+        currYaw = yaw;
+        if (currYaw > M_PI*2) {
+            currYaw -= M_PI*2;
+        }
+        
+        // Default movement
+        if (minLaserDist >= wallLimit) {
+            // Running as normal. Lots of space from wall.
+            if (currYaw > directionArray[directionIndex]) {
+                angular = -0.125;
+                linear = 0.175;
+            } else if (currYaw <= directionArray[directionIndex]) {
+                angular = 0.1;
+                linear = 0.175;
+            } 
+            //ROS_INFO("Sending to pController-> minL: %f, minR: %f, idxL: %i, idxR: %i, kp: %f",minLeftLaserDist, minRightLaserDist, leftIndex, rightIndex, kp);
+            //angular = pController(minLeftLaserDist, minRightLaserDist, leftIndex, rightIndex, kp, 0.);
+            
+        } else if (minLaserDist < wallLimit) {
+            
+            directionIndex += 1;
+            if (directionIndex > 3) {
+                directionIndex = 0;
+            }
+
+            while (currYaw < directionArray[directionIndex]) {
+                angular = 0.3;
+                linear = 0.0;
+                publishVelocity(angular, linear);
+                ros::spinOnce();
+            }
+        }
+        ////////////////// YAW STUFF ENDS /////////////////////
+*/
+
+        } else if (minLaserDist < wallLimit) {
+            // Too close to wall. Check which side has more space.
+            
+            if (backingUpCounter >=5) {
+                if (minLeftLaserDist > minRightLaserDist) {
+                    angular = 2;
+                    linear = 0.0;
+                    backingUpCounter = 0;
+                } else if (minLeftLaserDist <= minRightLaserDist) {
+                    angular = -2;
+                    linear = 0.0;
+                    backingUpCounter = 0;
+                }
+            }
+
+            if (minLeftLaserDist > minRightLaserDist) {
+                angular = -0.75;
+                linear = -0.1;
+                backingUpCounter+=1;
+            } else if (minLeftLaserDist < minRightLaserDist) {
+                angular = 0.75;
+                linear = -0.1;
+                backingUpCounter+=1;
+            } else {
+                angular = -0.5;
+                linear = -0.08;
+            }
+
+        }
     }
 
-
-
-    // // Open space to the left
-    // if (leftMaxLaserDist > rightMaxLaserDist && minLaserDist > 0.5 && turning == false) {
-    //     angular = 0.125;
-    //     linear = 0.175;
-
-    // // Open space to the right    
-    // } else if (rightMaxLaserDist > leftMaxLaserDist && minLaserDist > 0.5 && turning == false) {
-    //     angular = -0.125;
-    //     linear = 0.175;
-
-    // } else if (minLaserDist <= 0.5 && turning == false) {
-            
-    //     // Too close to a wall, back up and slightly turn
-    //     if (leftMaxLaserDist > rightMaxLaserDist) {
-    //         angular = 0.5;
-    //         linear = -0.03;
-    //     } else if (rightMaxLaserDist > leftMaxLaserDist) {
-    //         angular = -0.5;
-    //         linear = -0.03;
-    //     } 
-
-    // }
-
+    //ROS_INFO("Sending to publishVelocity -> Angular: %f, Linear: %f", angular, linear);
     publishVelocity(angular, linear);
+
 }
 
 ///////////////////////////////////
 //////   MAIN CODE ENDS   /////////
 ///////////////////////////////////
 
-/*
-void EnvironmentSearch::randomScan() {
+
+// float EnvironmentSearch::randomScan() {
     
-    // Turn in place
-    float angular = 0.3;
-    float linear = 0.0;
-    publishVelocity(angular, linear);
-}
-*/
+//     // Turn in place
+//     float angular = 0.3;
+//     float linear = 0.0;
+//     return angular, linear;
+// }
+
 void EnvironmentSearch::publishVelocity(float angular, float linear) {
+    
     // Publish velocity values
+    geometry_msgs::Twist vel;
     vel.angular.z = angular;
     vel.linear.x = linear;
     vel_pub.publish(vel);
-
+    ROS_INFO("Published: Angular Vel: %f, Linear Vel: %f", angular, linear);
+    
     // Process a single round of callbacks
     ros::spinOnce();
 }
 
-
-float EnvironmentSearch::pController(float minLeftDist, float minRightDist, float leftIndex, float rightIndex, float kp) {
-    float angular = 0.0;
+/* does not work :(
+float EnvironmentSearch::pController(float minLeftDist, float minRightDist, float leftIndex, float rightIndex, float kp, float prevAngular) {
+    ros::spinOnce();
+    float angular = prevAngular;
     float laserDiff = minLeftDist - minRightDist;
     float indexDiff = leftIndex - rightIndex;
-
-    if (laserDiff > 0.4) {
+    
+    if (laserDiff > 0.2) {
         angular = kp * laserDiff/minLeftDist;
-    } else if (-1*laserDiff > 0.4) {
+    } else if (-1*laserDiff > 0.2) {
         angular = kp * laserDiff/minRightDist;
     }
 
+    ROS_INFO("pController angular: %f", angular);
     return angular;
 
 }
-/*
-void EnvironmentSearch::avoidWall() {
-    
-    float currentWallDist = minLaserDist;
-
-    float yawAdjustment = 0.0;
-    float linearAdjustment = 0.0;
-
-    if (currentWallDist < wallLimit) {
-        yawAdjustment = 1.0;
-        linearAdjustment = 0.0;
-    } else {
-        yawAdjustment = 0.0;
-        linearAdjustment = 0.1;
-    }
-
-    publishVelocity(yawAdjustment,linearAdjustment);
-
-}
 */
+
 void EnvironmentSearch::bumperCallback(const kobuki_msgs::BumperEvent::ConstPtr& msg)
 {
 	// Access using bumper[kobuki_msgs::BumperEvent::{}] LEFT, CENTER, or RIGHT
@@ -161,7 +200,6 @@ void EnvironmentSearch::laserCallback(const sensor_msgs::LaserScan::ConstPtr& ms
     minLaserDist = std::numeric_limits<float>::infinity();
     leftIndex = nLasers/2 + desiredNLasers;
     rightIndex = nLasers/2 - desiredNLasers;
-
     nLasers = (msg->angle_max - msg->angle_min) / msg->angle_increment;
     desiredNLasers = desiredAngle*M_PI / (180*msg->angle_increment);
     ROS_INFO("Size of laser scan array: %i and size of offset: %i", nLasers, desiredNLasers);
