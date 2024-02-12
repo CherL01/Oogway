@@ -99,6 +99,7 @@ int main(int argc, char **argv)
             turtleSpeed = slowDown;
             turtleAngle = slowDownAngular;
             uint64_t travelTimeLimit = 30;
+            turnAngle = 20;
 
             ROS_INFO("SLOWING DOWN...");
         }
@@ -108,6 +109,7 @@ int main(int argc, char **argv)
             turtleSpeed = normal;
             turtleAngle = normalAngular;
             uint64_t travelTimeLimit = 15;
+            turnAngle = 10;
             ROS_INFO("NORMAL SPEED");
         }
 
@@ -203,6 +205,7 @@ int main(int argc, char **argv)
                     {
                         ROS_INFO("Too much Gittering");
                         subStepsCount = 0;
+                        travelLoop = 0;
                         stepsCount = SCAN_STEP;
                         turnAngle = 10;
                     }

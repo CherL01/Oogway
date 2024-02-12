@@ -28,9 +28,9 @@ using namespace std;
 //global variables
 
 
-const float slowDownLimit = 0.8;
-const float stopLimit = 0.5; //cannot detect 0.5 -> increase to 0.6 or 0.7?
-const float clearLimit = 0.5;
+const float slowDownLimit = 0.9;
+const float stopLimit = 0.7; //cannot detect 0.5 -> increase to 0.6 or 0.7?
+const float clearLimit = 0.75;
 
 //State variables: Determines which state turtlebot is in
 
