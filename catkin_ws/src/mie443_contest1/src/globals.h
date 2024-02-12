@@ -31,14 +31,14 @@ using namespace std;
 
 
 const float slowDownLimit = 0.9;
-const float stopLimit = 0.7; //cannot detect 0.5 -> increase to 0.6 or 0.7?
-const float clearLimit = 0.75;
+const float stopLimit = 0.6; //cannot detect 0.5 -> increase to 0.6 or 0.7?
+const float clearLimit = 0.65;
 
 //State variables: Determines which state turtlebot is in
 
 const int TRAVEL_STEP = 1; //travel state
 const int SCAN_STEP = 0; //scanning state
-const int travelLoopLimit = 10; //gittering loop limit
+const int travelLoopLimit = 15; //gittering loop limit
 
 extern bool isMoving; //boolean to determing if turtlebot is moving or not
 

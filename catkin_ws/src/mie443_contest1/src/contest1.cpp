@@ -76,6 +76,9 @@ int main(int argc, char **argv)
 
         ros::spinOnce();
         ROS_INFO("Substep: %d", subStepsCount);
+        ROS_INFO("FRONT: %g", minLaserDist);
+        ROS_INFO("RIGHT-END: %g", rightLaserDist);
+        ROS_INFO("LEFT-END: %g", leftLaserDist);
 
         //PRELIMINARY CHECKINGS
 
@@ -127,12 +130,16 @@ int main(int argc, char **argv)
                 ROS_INFO("SCANNING...");
 
                 //skip first loop as yaw isn't updated yet
-                if (subStepsCount == 0) subStepsCount++; 
+                if (subStepsCount == 0) 
+                {
+                    subStepsCount++;
+                } 
 
                 // initially turn 180 ccw                
                 else if (subStepsCount == 1) 
                 {
-                    prevYaw = yaw;
+                    ROS_INFO("YAW::::: %f", yaw);
+
                     targetYaw = yaw +180;
                     turnCCW(targetYaw, angular, linear, remainingYaw, turtleAngle);
 
@@ -143,7 +150,7 @@ int main(int argc, char **argv)
                 // turn another 180 ccw for 1 full loop
                 else if (subStepsCount == 2) 
                 {
-                    prevYaw = yaw;
+
                     targetYaw = yaw +180;
                     turnCCW(targetYaw, angular, linear, remainingYaw, turtleAngle);
 
@@ -206,7 +213,7 @@ int main(int argc, char **argv)
                 // STOP LIMIT REACHED: instruct to turn left or right
                 else if (subStepsCount == 2) 
                 {
-                    if (travelLoop >= travelLoopLimit)
+                    if (travelLoop >= travelLoopLimit) // put this last
                     {
                         ROS_INFO("Too much Gittering");
                         subStepsCount = 0;
@@ -214,9 +221,18 @@ int main(int argc, char **argv)
                         stepsCount = SCAN_STEP;
                         turnAngle = 10;
                     }
-
+                    if (travelLoop >= 6)
+                    {
+                        ROS_INFO("Too much Gittering");
+                        turnAngle = 5;
+                    }
                     /// rotate if travel loop limit not reached
-                    else if (leftLaserDist > rightLaserDist)
+                    /*
+                    if (minLaserDist > rightLaserDist && minLaserDist > leftLaserDist)
+                    {
+                        
+                    }*/
+                    if (leftLaserDist > rightLaserDist)
                     {
                         targetYaw = yaw +turnAngle;
                         turnCCW(targetYaw, angular, linear, remainingYaw, turtleAngle);
@@ -237,15 +253,20 @@ int main(int argc, char **argv)
                 else if (subStepsCount == 3)
                 {
                     ROS_INFO("!!!!!!!!!!!!!!!TIME LIMIT!!!!!!!!!!!!!");
-                    targetYaw = yaw +180;
-                    turnCCW(targetYaw, angular, linear, remainingYaw, turtleAngle);
-                    subStepsCount++;
-                }
 
-                else if (subStepsCount == 5)
-                {
-                    targetYaw = yaw +180;
-                    turnCCW(targetYaw, angular, linear, remainingYaw, turtleAngle);
+                    if (rightLaserDist > leftLaserDist)
+                    {
+                        targetYaw = yaw -90;
+                        turnCW(targetYaw, angular, linear, remainingYaw, turtleAngle);
+                    }
+
+                    else 
+                    {
+                        targetYaw = yaw +90;
+                        turnCCW(targetYaw, angular, linear, remainingYaw, turtleAngle);
+
+                    }
+                    
                     subStepsCount++;
                 }
 
@@ -275,7 +296,7 @@ int main(int argc, char **argv)
             ROS_INFO("Travelling...");
 
             //if timeout reached & after 300s passed, turn 360
-            if (travelElapsed > travelTimeLimit && secondsElapsed > 300)
+            if (travelElapsed > travelTimeLimit && secondsElapsed > 240)
                 {
                     travelElapsed = 0.0;
                     subStepsCount = 3;
@@ -294,6 +315,13 @@ int main(int argc, char **argv)
             // Check for laserScan detection (obstacle avoidance)
             if (subStepsCount == 1)
             {
+                if (leftLaserDist < slowDownLimit || minLaserDist < slowDownLimit || rightLaserDist < slowDownLimit) 
+                {
+                    
+                    angular = 0.0;
+                    linear = turtleSpeed;
+                }
+
                 if (leftLaserDist < stopLimit || minLaserDist < stopLimit || rightLaserDist < stopLimit) 
                 {
                     subStepsCount++;
@@ -330,16 +358,12 @@ int main(int argc, char **argv)
             else if (subStepsCount == 4)
             {
                 ROS_INFO("TURNING AFTER TIME LIMIT REACHED");
-                checkTurnCCW(targetYaw, angular, linear, remainingYaw, turtleAngle);
+                if (angular>0) checkTurnCCW(targetYaw, angular, linear, remainingYaw, turtleAngle);
+                else checkTurnCW(targetYaw, angular, linear, remainingYaw, turtleAngle);
                 
-                if (angular==0) subStepsCount++;
+                if (angular==0) subStepsCount=0;
             }
 
-            else if (subStepsCount == 6)
-            {
-                checkTurnCCW(targetYaw, angular, linear, remainingYaw, turtleAngle);
-                if (angular==0) subStepsCount = 0;
-            }
 
 
         }
@@ -354,7 +378,7 @@ int main(int argc, char **argv)
             if (stepsCount == SCAN_STEP && subStepsCount != 0)
             {
                 ROS_INFO("recording yaw...");
-                if (maxLaserDist < minLaserDist && minLaserDist != std::numeric_limits<float>::infinity() && abs(yaw-prevYaw)>4)
+                if (maxLaserDist < minLaserDist && minLaserDist != std::numeric_limits<float>::infinity())
                 {
                     maxLaserDist = minLaserDist;
                     openYaw = yaw;
