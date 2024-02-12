@@ -143,6 +143,7 @@ int main(int argc, char **argv)
                 // turn another 180 ccw for 1 full loop
                 else if (subStepsCount == 2) 
                 {
+                    prevYaw = yaw;
                     targetYaw = yaw +180;
                     turnCCW(targetYaw, angular, linear, remainingYaw, turtleAngle);
 
@@ -353,7 +354,7 @@ int main(int argc, char **argv)
             if (stepsCount == SCAN_STEP && subStepsCount != 0)
             {
                 ROS_INFO("recording yaw...");
-                if (maxLaserDist < minLaserDist && minLaserDist != std::numeric_limits<float>::infinity() && abs(yaw-prevYaw)<4)
+                if (maxLaserDist < minLaserDist && minLaserDist != std::numeric_limits<float>::infinity() && abs(yaw-prevYaw)>4)
                 {
                     maxLaserDist = minLaserDist;
                     openYaw = yaw;
