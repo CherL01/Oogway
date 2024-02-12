@@ -213,18 +213,18 @@ int main(int argc, char **argv)
                 // STOP LIMIT REACHED: instruct to turn left or right
                 else if (subStepsCount == 2) 
                 {
-                    if (travelLoop >= travelLoopLimit) // put this last
-                    {
-                        ROS_INFO("Too much Gittering");
-                        subStepsCount = 0;
-                        travelLoop = 0;
-                        stepsCount = SCAN_STEP;
-                        turnAngle = 10;
-                    }
-                    if (travelLoop >= 6)
+                    if (travelLoop >= 6) //reduce turn increments if loop count exceeds 5
                     {
                         ROS_INFO("Too much Gittering");
                         turnAngle = 5;
+
+                        if (travelLoop >= travelLoopLimit)
+                        {
+                            subStepsCount = 0;
+                            travelLoop = 0;
+                            stepsCount = SCAN_STEP;
+                            turnAngle = 10;
+                        }
                     }
                     /// rotate if travel loop limit not reached
                     /*
@@ -245,6 +245,16 @@ int main(int argc, char **argv)
                         targetYaw = yaw -turnAngle;
                         turnCW(targetYaw, angular, linear, remainingYaw, turtleAngle);
                         travelLoop++;
+                    }
+
+                    if (secondsElapsed > 240 && turnAngle == 5 && leftLaserDist<minLaserDist && rightLaserDist<minLaserDist)
+                    {
+                        //break;
+                        currentX = posX;
+                        currentY = posY;
+                        targetDist = 0.2;
+                        moveFront(targetDist, currentX, currentY, angular, linear, turtleSpeed);
+                        travelLoop = 0;
                     }
 
                 }
@@ -295,7 +305,7 @@ int main(int argc, char **argv)
         {
             ROS_INFO("Travelling...");
 
-            //if timeout reached & after 300s passed, turn 360
+            //if timeout reached & after 240s passed, turn 360
             if (travelElapsed > travelTimeLimit && secondsElapsed > 240)
                 {
                     travelElapsed = 0.0;
@@ -338,7 +348,15 @@ int main(int argc, char **argv)
                 {
                     if (angular > 0) checkTurnCCW(targetYaw, angular, linear, remainingYaw, turtleAngle);
                     else checkTurnCW(targetYaw, angular, linear, remainingYaw, turtleAngle);
-                } 
+                }
+
+                // check movement for target distance
+                if (linear !=0) 
+                {
+                    //break;
+                    checkMoveFront(targetDist, currentX, currentY, angular, linear, turtleSpeed);
+                }
+            
 
 
                 // Go back to travelling state if laser scan clears
