@@ -63,7 +63,7 @@ int main(int argc, char **argv)
     float linear = 0.0;
 
     // Initialize to scan state & substep 0
-    stepsCount = SCAN_STEP;
+    stepsCount = TRAVEL_STEP;
     subStepsCount = 0;
 
     // Print statement to differentiate local and github repositories

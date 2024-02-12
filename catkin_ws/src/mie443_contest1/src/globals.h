@@ -31,8 +31,8 @@ using namespace std;
 
 
 const float slowDownLimit = 0.9;
-const float stopLimit = 0.6; //cannot detect 0.5 -> increase to 0.6 or 0.7?
-const float clearLimit = 0.65;
+const float stopLimit = 0.7; //cannot detect 0.5 -> increase to 0.6 or 0.7?
+const float clearLimit = 0.75;
 
 //State variables: Determines which state turtlebot is in
 

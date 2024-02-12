@@ -67,14 +67,14 @@ set(mie443_contest1_CONFIG_INCLUDED TRUE)
 
 # set variables for source/devel/install prefixes
 if("FALSE" STREQUAL "TRUE")
-  set(mie443_contest1_SOURCE_PREFIX /home/tuesday2023/Oogway/catkin_ws/src/mie443_contest1)
-  set(mie443_contest1_DEVEL_PREFIX /home/tuesday2023/Oogway/catkin_ws/devel)
+  set(mie443_contest1_SOURCE_PREFIX /home/harryp/Oogway/catkin_ws/src/mie443_contest1)
+  set(mie443_contest1_DEVEL_PREFIX /home/harryp/Oogway/catkin_ws/devel)
   set(mie443_contest1_INSTALL_PREFIX "")
   set(mie443_contest1_PREFIX ${mie443_contest1_DEVEL_PREFIX})
 else()
   set(mie443_contest1_SOURCE_PREFIX "")
   set(mie443_contest1_DEVEL_PREFIX "")
-  set(mie443_contest1_INSTALL_PREFIX /home/tuesday2023/Oogway/catkin_ws/install)
+  set(mie443_contest1_INSTALL_PREFIX /home/harryp/Oogway/catkin_ws/install)
   set(mie443_contest1_PREFIX ${mie443_contest1_INSTALL_PREFIX})
 endif()
 
@@ -154,7 +154,7 @@ foreach(library ${libraries})
     set(lib_path "")
     set(lib "${library}-NOTFOUND")
     # since the path where the library is found is returned we have to iterate over the paths manually
-    foreach(path /home/tuesday2023/Oogway/catkin_ws/install/lib;/home/tuesday2023/Oogway/catkin_ws/devel/lib;/opt/ros/kinetic/lib)
+    foreach(path /home/harryp/Oogway/catkin_ws/install/lib;/home/harryp/catkin_ws/devel/lib;/opt/ros/kinetic/lib)
       find_library(lib ${library}
         PATHS ${path}
         NO_DEFAULT_PATH NO_CMAKE_FIND_ROOT_PATH)
