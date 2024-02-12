@@ -1,5 +1,7 @@
 #include "move.h"
 
+// Controls movement of robot including odometry callback function
+
 float posX=0.0, posY=0.0, yaw=0.0;
 
 float remainingYaw = std::numeric_limits<float>::infinity();

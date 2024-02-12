@@ -1,12 +1,9 @@
-
 #include "laserCallback.h"
 
 float minLaserDist = std::numeric_limits<float>::infinity();
 float leftLaserDist = std::numeric_limits<float>::infinity();
 float rightLaserDist = std::numeric_limits<float>::infinity();
 int32_t nLasers=0, desiredNLasers=0, desiredAngle=15;
-
-//NEED TO INCLUDE SET_SPEED TO ADJUST SPEED BASED ON SENSOR READINGS
 
 
 void laserCallback(const sensor_msgs::LaserScan::ConstPtr& msg)
@@ -24,9 +21,7 @@ void laserCallback(const sensor_msgs::LaserScan::ConstPtr& msg)
     //index 0 is right
     //index nLasers(max) is left
 
-    
 
-    //ROS_INFO("Size of laser scan array: %i and size of offset: %i", nLasers, desiredNLasers);
     
     // FRONT-FACING: 0 degrees, hence the midpoint of ranges' index
     
@@ -52,11 +47,9 @@ void laserCallback(const sensor_msgs::LaserScan::ConstPtr& msg)
             leftLaserDist = std::min(leftLaserDist, msg->ranges[lLaser_idx]);
         }
         
-        /*
         ROS_INFO("FRONT: %g", minLaserDist);
         ROS_INFO("RIGHT-END: %g", rightLaserDist);
         ROS_INFO("LEFT-END: %g", leftLaserDist);
-        */
 
 
 

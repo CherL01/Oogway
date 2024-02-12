@@ -1,5 +1,7 @@
 #include "bumper.h"
 
+// Separate file for bumper callback function
+
 uint8_t bumper[3] = {kobuki_msgs::BumperEvent::RELEASED, kobuki_msgs::BumperEvent::RELEASED, kobuki_msgs::BumperEvent::RELEASED};
 
 uint8_t leftState = bumper[kobuki_msgs::BumperEvent::LEFT];

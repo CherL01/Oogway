@@ -1,6 +1,8 @@
 #ifndef GLOBAL_HEADER
 #define GLOBAL_HEADER
 
+// Contains all global variables
+
 //libraries needed 
 
 #include <ros/console.h>
@@ -44,7 +46,7 @@ extern int stepsCount; //sets state of turtlebot
 extern int subStepsCount; //substates
 extern int travelLoop; //loop count during travelling
 
-extern uint64_t travelTimeLimit;
+extern uint64_t travelTimeLimit; //timeoutlimit for travelling state
 
 
 

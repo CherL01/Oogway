@@ -61,7 +61,7 @@ int main(int argc, char **argv)
     float angular = 0.0;
     float linear = 0.0;
 
-    // Initialize to scan state & substate 0
+    // Initialize to scan state & substep 0
     stepsCount = SCAN_STEP;
     subStepsCount = 0;
 
@@ -98,7 +98,7 @@ int main(int argc, char **argv)
         {
             turtleSpeed = slowDown;
             turtleAngle = slowDownAngular;
-            uint64_t travelTimeLimit = 30;
+            travelTimeLimit = 30;
             turnAngle = 20;
 
             ROS_INFO("SLOWING DOWN...");
@@ -108,30 +108,28 @@ int main(int argc, char **argv)
         {
             turtleSpeed = normal;
             turtleAngle = normalAngular;
-            uint64_t travelTimeLimit = 15;
+            travelTimeLimit = 15;
             turnAngle = 10;
             ROS_INFO("NORMAL SPEED");
         }
 
-        //ADDING RANDOMNESS TO MOVEMENT -> SCAN every interval, after travelling for certain intervals, gittering at corners
-        
-
-        ////if too much gittering, turnAngle = 10 again & scan
 
 
         //When Oogway is stationary, give directions
         if (!isMoving)
         {
             
-
+            // SCANNING STEP
             if (stepsCount == SCAN_STEP)
             {
 
                 ROS_INFO("SCANNING...");
 
-                if (subStepsCount == 0) subStepsCount++; //skip first loop as yaw isn't updated yet
-                
-                else if (subStepsCount == 1) // initially turn 180 ccw
+                //skip first loop as yaw isn't updated yet
+                if (subStepsCount == 0) subStepsCount++; 
+
+                // initially turn 180 ccw                
+                else if (subStepsCount == 1) 
                 {
                     targetYaw = yaw +180;
                     turnCCW(targetYaw, angular, linear, remainingYaw, turtleAngle);
@@ -139,8 +137,9 @@ int main(int argc, char **argv)
                     subStepsCount++;
                     
                 } 
-
-                else if (subStepsCount == 2) // turn another 180 ccw for 1 full loop
+                
+                // turn another 180 ccw for 1 full loop
+                else if (subStepsCount == 2) 
                 {
                     targetYaw = yaw +180;
                     turnCCW(targetYaw, angular, linear, remainingYaw, turtleAngle);
@@ -148,14 +147,11 @@ int main(int argc, char **argv)
                     subStepsCount++;
                 }
 
+                // direct to desired yaw and exit to travel mode
                 else if (subStepsCount == 3)
                 {
                     targetYaw = openYaw;
 
-                    // Turn action to turn to open yaw - fastest action (CCW or CW)
-                    //turnCCW(targetYaw, angular, linear, remainingYaw);
-                    
-                    //NEED TO FIX!
                     if (targetYaw > yaw)
                     {
                         if (yaw < 180 && yaw+360 - targetYaw < 180) turnCW(targetYaw, angular, linear, remainingYaw, turtleAngle);
@@ -183,23 +179,29 @@ int main(int argc, char **argv)
 
             }
 
+            // TRAVELLING STEP
             else if (stepsCount == TRAVEL_STEP)
             {
 
-                ROS_INFO("TRAVELLING...");
+                ROS_INFO("TRAVELLING (NOT MOVING YET)...");
+
+                //Iniitate clock for timeout
                 if (subStepsCount == 0)
                 {
                     travelStart = std::chrono::system_clock::now();
                     subStepsCount++;
                 }
 
-                else if (subStepsCount == 1) //give travel instructions
+                //give travel instructions - go straight
+                else if (subStepsCount == 1) 
                 {
-                    linear = turtleSpeed; //go straight
+                    linear = turtleSpeed;
                     angular = 0.0;
                     
                 }
-                else if (subStepsCount == 2) // STOP LIMIT: instruct to turn left or right
+
+                // STOP LIMIT REACHED: instruct to turn left or right
+                else if (subStepsCount == 2) 
                 {
                     if (travelLoop >= travelLoopLimit)
                     {
@@ -228,6 +230,7 @@ int main(int argc, char **argv)
 
                 }
 
+                // turn 360 if timeout limit
                 else if (subStepsCount == 3)
                 {
                     ROS_INFO("!!!!!!!!!!!!!!!TIME LIMIT!!!!!!!!!!!!!");
@@ -263,10 +266,12 @@ int main(int argc, char **argv)
 
             }
 
-        // TRAVEL STATE: laser limit in else ifelse if ()
+        //Monitor Travelling
         else if (stepsCount == TRAVEL_STEP)
         {
             ROS_INFO("Travelling...");
+
+            //if timeout reached & after 300s passed, turn 360
             if (travelElapsed > travelTimeLimit && secondsElapsed > 300)
                 {
                     travelElapsed = 0.0;
@@ -276,14 +281,14 @@ int main(int argc, char **argv)
                 }
 
 
-
+            //complete scanning motion after transitioning from scanning state
             if (subStepsCount == 0)
-            {
-                //complete scanning motion
+            {  
                 if (angular > 0) checkTurnCCW(targetYaw, angular, linear, remainingYaw, turtleAngle);
                 else checkTurnCW(targetYaw, angular, linear, remainingYaw, turtleAngle);
             }
-            // LaserScan detection
+
+            // Check for laserScan detection (obstacle avoidance)
             if (subStepsCount == 1)
             {
                 if (leftLaserDist < stopLimit || minLaserDist < stopLimit || rightLaserDist < stopLimit) 
@@ -293,10 +298,10 @@ int main(int argc, char **argv)
                     linear = 0.0;
                 }
             }
-
+            
+            //obstacle avoidance - check if turning is complete
             else if (subStepsCount == 2)
             {
-                //travelLoop++;
 
                 if (angular != 0)
                 {
@@ -318,6 +323,7 @@ int main(int argc, char **argv)
                 
             }
 
+            //Complete turning motion during 360 sweep
             else if (subStepsCount == 4)
             {
                 ROS_INFO("TURNING AFTER TIME LIMIT REACHED");
@@ -338,8 +344,6 @@ int main(int argc, char **argv)
         //isMoving
         else 
         {
-            //ROS_INFO("Remaining yaw outside checkturn: %f", remainingYaw);
-            //CHECK IF MOVEMENT IS DONE
             ROS_INFO("Moving...");
 
             //record yaw with most opening during 360 scan
