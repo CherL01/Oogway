@@ -1,2 +1,2 @@
-mie443_contest1/mie443_contest1
--DCATKIN_DEVEL_PREFIX=/home/tuesday2023/catkin_ws/devel -DCMAKE_INSTALL_PREFIX=/home/tuesday2023/catkin_ws/install -G Unix Makefiles
+mie443_contest1
+-DCATKIN_DEVEL_PREFIX=/home/tuesday2023/Oogway/catkin_ws/devel -DCMAKE_INSTALL_PREFIX=/home/tuesday2023/Oogway/catkin_ws/install -G Unix Makefiles
