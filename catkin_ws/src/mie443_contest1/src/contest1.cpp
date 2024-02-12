@@ -21,6 +21,7 @@ float currentX = 0.0;
 float currentY = 0.0;
 
 float openYaw = 0.0;
+float prevYaw = 0.0;
 
 float turnAngle = 10.0; 
 
@@ -131,6 +132,7 @@ int main(int argc, char **argv)
                 // initially turn 180 ccw                
                 else if (subStepsCount == 1) 
                 {
+                    prevYaw = yaw;
                     targetYaw = yaw +180;
                     turnCCW(targetYaw, angular, linear, remainingYaw, turtleAngle);
 
@@ -351,7 +353,7 @@ int main(int argc, char **argv)
             if (stepsCount == SCAN_STEP && subStepsCount != 0)
             {
                 ROS_INFO("recording yaw...");
-                if (maxLaserDist < minLaserDist && minLaserDist != std::numeric_limits<float>::infinity())
+                if (maxLaserDist < minLaserDist && minLaserDist != std::numeric_limits<float>::infinity() && abs(yaw-prevYaw)<4)
                 {
                     maxLaserDist = minLaserDist;
                     openYaw = yaw;

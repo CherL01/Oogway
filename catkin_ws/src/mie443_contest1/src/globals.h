@@ -69,6 +69,7 @@ extern float turtleSpeed; //speed override
 extern float turtleAngle; //angular spped override
 
 extern float openYaw; //openYaw for turning after scan
+extern float prevYaw;
 
 extern float turnAngle; //turn increment during travel
 
