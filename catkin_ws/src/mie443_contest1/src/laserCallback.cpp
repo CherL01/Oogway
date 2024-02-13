@@ -46,12 +46,6 @@ void laserCallback(const sensor_msgs::LaserScan::ConstPtr& msg)
         for (uint32_t lLaser_idx = nLasers/2+desiredNLasers; lLaser_idx < nLasers; ++lLaser_idx){
             leftLaserDist = std::min(leftLaserDist, msg->ranges[lLaser_idx]);
         }
-        
-        ROS_INFO("FRONT: %g", minLaserDist);
-        ROS_INFO("RIGHT-END: %g", rightLaserDist);
-        ROS_INFO("LEFT-END: %g", leftLaserDist);
-
-
 
     
     }

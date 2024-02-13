@@ -49,27 +49,19 @@ void turnCCW (float& targetYaw, float& angular, float& linear, float& remainingY
     }
 
     remainingYaw = targetYaw - yaw; //initialize remainingYaw
-    
-    //ROS_INFO("Yaw: %f", yaw);
-    //ROS_INFO("Target Yaw: %f", targetYaw);
-    //ROS_INFO("Remaining Yaw: %f", remainingYaw); 
 
     ///* logic to check ismovingis done 
     if(remainingYaw <= 0.0 || abs(yaw-targetYaw) < 4) //stop once remaining is less than 0
     {
         angular = 0.0;
         linear = 0.0;
-        //ROS_INFO("Turning is false!");
-        //ROS_INFO("Stopped turning...");
-
     }
 
     else //keep rotating as long as there is remaining yaw
     {
         angular = turtleAngle;
         linear = 0.0;
-        //ROS_INFO("Turning CCW... remaining: %f", remainingYaw);
-    } //logic to ~~ */
+    } 
 
 }
 
