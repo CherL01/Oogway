@@ -63,7 +63,7 @@ int main(int argc, char **argv)
     float linear = 0.0;
 
     // Initialize to scan state & substep 0
-    stepsCount = TRAVEL_STEP;
+    stepsCount = SCAN_STEP;
     subStepsCount = 0;
 
     // Print statement to differentiate local and github repositories
@@ -216,22 +216,18 @@ int main(int argc, char **argv)
                     if (travelLoop >= 6) //reduce turn increments if loop count exceeds 5
                     {
                         ROS_INFO("Too much Gittering");
-                        turnAngle = 5;
+                        turnAngle = 10;
 
                         if (travelLoop >= travelLoopLimit)
                         {
                             subStepsCount = 0;
                             travelLoop = 0;
                             stepsCount = SCAN_STEP;
-                            turnAngle = 10;
+                            turnAngle = 20;
                         }
                     }
-                    /// rotate if travel loop limit not reached
-                    /*
-                    if (minLaserDist > rightLaserDist && minLaserDist > leftLaserDist)
-                    {
-                        
-                    }*/
+                    /// turn until clearance if travel loop limit not reached
+                   
                     if (leftLaserDist > rightLaserDist)
                     {
                         targetYaw = yaw +turnAngle;
@@ -247,19 +243,20 @@ int main(int argc, char **argv)
                         travelLoop++;
                     }
 
-                    if (secondsElapsed > 240 && turnAngle == 5 && leftLaserDist<minLaserDist && rightLaserDist<minLaserDist)
+                    // move forward in small increments in narrow paths
+                    if (secondsElapsed>240 && travelLoop >10 && leftLaserDist<minLaserDist && rightLaserDist<minLaserDist)
                     {
                         //break;
                         currentX = posX;
                         currentY = posY;
-                        targetDist = 0.2;
+                        targetDist = (minLaserDist-stopLimit)/2;
                         moveFront(targetDist, currentX, currentY, angular, linear, turtleSpeed);
                         travelLoop = 0;
                     }
 
                 }
 
-                // turn 360 if timeout limit
+                // turn 90 towards the middle of the map after time limit
                 else if (subStepsCount == 3)
                 {
                     ROS_INFO("!!!!!!!!!!!!!!!TIME LIMIT!!!!!!!!!!!!!");
@@ -372,14 +369,14 @@ int main(int argc, char **argv)
                 
             }
 
-            //Complete turning motion during 360 sweep
+            //Complete turning motion during 90 degree turns
             else if (subStepsCount == 4)
             {
                 ROS_INFO("TURNING AFTER TIME LIMIT REACHED");
                 if (angular>0) checkTurnCCW(targetYaw, angular, linear, remainingYaw, turtleAngle);
                 else checkTurnCW(targetYaw, angular, linear, remainingYaw, turtleAngle);
                 
-                if (angular==0) subStepsCount=0;
+                if (angular==0.0) subStepsCount=0;
             }
 
 

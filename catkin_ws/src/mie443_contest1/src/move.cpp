@@ -24,7 +24,7 @@ void odomCallback (const nav_msgs::Odometry::ConstPtr& msg)
     }
 
     yaw = RAD2DEG(yaw);
-    //ROS_INFO("move.h working...!");
+
 
 }
 
@@ -43,7 +43,7 @@ void turnCCW (float& targetYaw, float& angular, float& linear, float& remainingY
     } 
 
 
-    if (yaw > targetYaw && abs(yaw-targetYaw) > 4) //need to tune threshold value 4
+    if (yaw > targetYaw && abs(yaw-targetYaw) > 4)
     {
         targetYaw += 360;
     }
@@ -95,19 +95,19 @@ void turnCW (float& targetYaw, float& angular, float& linear, float& remainingYa
 
     remainingYaw = yaw - targetYaw;
 
+    
+
     if(remainingYaw <= 0.0 || abs(yaw-targetYaw) < 4) //stop once remaining is less than 0
     {
         angular = 0.0;
         linear = 0.0;
 
-        //break;
     }
 
     else //keep rotating as long as there is remaining yaw
     {
         angular = -turtleAngle;
         linear = 0.0;
-        //ROS_INFO("Turning CW... remaining: %f", remainingYaw);
     }
 }
 
@@ -169,12 +169,15 @@ void checkTurnCW (float& targetYaw, float& angular, float& linear, float& remain
 
     remainingYaw = yaw - targetYaw;
 
+    ROS_INFO("Yaw: %f", yaw);
+    ROS_INFO("Target Yaw: %f", targetYaw);
+    ROS_INFO("Remaining Yaw: %f", remainingYaw); 
+
     if(remainingYaw <= 0.0 || abs(yaw-targetYaw) < 4) //stop once remaining is less than 0
     {
         angular = 0.0;
         linear = 0.0;
 
-        //break;
     }
 }
 
@@ -192,7 +195,7 @@ void moveFront (float& targetDist, float& currentX, float& currentY, float& angu
     {
         angular = 0.0;
         linear = 0.0;
-        ROS_INFO("COMPLETED MOVING...");
+        ROS_INFO("COMPLETED MOVING!!");
     }
 
     else
@@ -213,7 +216,7 @@ void moveBack (float& targetDist, float& currentX, float& currentY, float& angul
     {
         angular = 0.0;
         linear = 0.0;
-        ROS_INFO("STOPPED MOVING!!");
+        ROS_INFO("COMPLETED MOVING!!");
     }
 
     else
@@ -236,7 +239,7 @@ void checkMoveFront (float& targetDist, float& currentX, float& currentY, float&
     {
         angular = 0.0;
         linear = 0.0;
-        ROS_INFO("COMPLETED MOVING...");
+        ROS_INFO("COMPLETED MOVING!!");
     }
 
     else
@@ -256,7 +259,7 @@ void checkMoveBack (float& targetDist, float& currentX, float& currentY, float& 
     {
         angular = 0.0;
         linear = 0.0;
-        ROS_INFO("STOPPED MOVING!!");
+        ROS_INFO("COMPLETED MOVING!!");
     }
 
     else
