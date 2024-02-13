@@ -8,7 +8,9 @@ This repository contains the ROS packages and source code for the MIE443 Contest
 - `catkin_ws/`:
   - `src/`: Folder containing ROS packages
       - `mie443_contest1/`:
+        
           -`src/` : Source files for the ROS nodes, including:
+
             - `bumper.cpp`: Bumper event handling.
             - `bumper.h`: Header file for bumper module.
             - `contest1.cpp`: Main node for robot operation.
