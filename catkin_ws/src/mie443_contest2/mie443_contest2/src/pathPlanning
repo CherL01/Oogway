@@ -1,0 +1,72 @@
+#include "PathPlanning.h"
+
+void PathPlanning::mainPlanner() {
+
+    // take in 5 x,y coords and orientation of Oogway
+    receiveBoxCoords();
+
+    // calculate nearest-neighbour for all coords
+    calcNearestNeighbour();
+
+    for (int i=0; i<5; i++) {
+        
+        moveToGoal(xGoal[i], yGoal[i], phiGoal[i]);
+        
+        new_x = xGoal[i];
+        new_y = yGoal[i];
+        new_phi = phiGoal[i];
+    }
+}
+
+void PathPlanning::receiveBoxCoords() {
+    for (int i=0;i<5;i++) {
+        for (int j=0;j<3;j++) {
+
+            // Initializes 5 boxes with x, y, phi
+            if (i==0) {
+                box1[j] = boxes.coords[i][j];
+            } else if (i==1) {
+                box2[j] = boxes.coords[i][j];
+            } else if (i==2) {
+                box3[j] = boxes.coords[i][j];
+            } else if (i==3) {
+                box4[j] = boxes.coords[i][j];
+            } else if (i==4) {
+                box5[j] = boxes.coords[i][j];
+            }
+        }
+    }
+    
+}
+
+void calcNearestNeighbour() {
+    // calc start to box 1,2,3,4,5
+    // calc box 1 to box 2,3,4,5
+    // calc box 2 to box 3,4,5
+    // calc box 3 to box 4,5
+    // calc box 4 to box 5
+    // ** FIND NN FOR ALL **
+
+    NNdistance[0] = sqrt(box1[0]*2 + box1[1]*2);
+    NNdistance[1] = sqrt(box2[0]*2 + box2[1]*2);
+    NNdistance[2] = sqrt(box3[0]*2 + box3[1]*2);
+    NNdistance[3] = sqrt(box4[0]*2 + box4[1]*2);
+    NNdistance[4] = sqrt(box5[0]*2 + box5[1]*2);
+    NNdistance[5] = sqrt(box1[0]*2 + box1[1]*2) - sqrt(box2[0]*2 + box2[1]*2);
+    NNdistance[6] = sqrt(box1[0]*2 + box1[1]*2) - sqrt(box3[0]*2 + box3[1]*2);
+    NNdistance[7] = sqrt(box1[0]*2 + box1[1]*2) - sqrt(box4[0]*2 + box4[1]*2);
+    NNdistance[8] = sqrt(box1[0]*2 + box1[1]*2) - sqrt(box5[0]*2 + box5[1]*2);
+    NNdistance[9] = sqrt(box2[0]*2 + box2[1]*2) - sqrt(box3[0]*2 + box3[1]*2);
+    NNdistance[10] = sqrt(box2[0]*2 + box2[1]*2) - sqrt(box4[0]*2 + box4[1]*2);
+    NNdistance[11] = sqrt(box2[0]*2 + box2[1]*2) - sqrt(box5[0]*2 + box5[1]*2);
+    NNdistance[12] = sqrt(box3[0]*2 + box2[1]*2) - sqrt(box4[0]*2 + box4[1]*2);
+    NNdistance[13] = sqrt(box3[0]*2 + box2[1]*2) - sqrt(box5[0]*2 + box5[1]*2);
+    NNdistance[14] = sqrt(box4[0]*2 + box2[1]*2) - sqrt(box5[0]*2 + box5[1]*2);
+
+    // Find min distance (NN)
+
+
+}
+
+
+
