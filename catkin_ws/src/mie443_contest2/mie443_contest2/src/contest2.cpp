@@ -10,6 +10,7 @@ int main(int argc, char** argv) {
     ros::NodeHandle n;
     // Robot pose object + subscriber.
     RobotPose robotPose(0,0,0);
+
     ros::Subscriber amclSub = n.subscribe("/amcl_pose", 1, &RobotPose::poseCallback, &robotPose);
         // Initialize box coordinates and templates
     Boxes boxes; 
@@ -44,6 +45,7 @@ int main(int argc, char** argv) {
             start_x = robotPose.x;
             start_y = robotPose.y;
             start_z = robotPose.phi;
+            Navigation::moveToGoal(start_x, start_y, start_z+ M_PI);
         }
         
         float z = boxes.coords[box_count][2] - M_PI; // -2.3
@@ -62,7 +64,7 @@ int main(int argc, char** argv) {
 
             ROS_INFO("Finsihed in: %f", secondsElapsed);
             break;}
-        //imagePipeline.getTemplateID(boxes);
+        imagePipeline.getTemplateID(boxes);
         secondsElapsed = std::chrono::duration_cast<std::chrono::seconds>(std::chrono::system_clock::now()-start).count();
         std::cout << "Time Elapsed:" << std:: endl;
         std::cout << secondsElapsed;
