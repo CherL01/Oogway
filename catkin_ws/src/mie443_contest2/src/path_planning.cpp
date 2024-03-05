@@ -18,11 +18,11 @@ double euclidean_dist(std::vector<float> object1, std::vector<float> object2) {
 
 // path solver: brute force
 
-int travllingSalesmanProblem(int graph[][V], int s) {
+int travllingSalesmanProblem(double graph[V][V], int s) {
 
     std::vector<vector> possible_solution_list; 
 
-    std::vector<int> vertex;
+    std::vector<double> vertex;
     for (int i = 0; i < V; i++)
         if (i != s)
             vertex.push_back(i);
