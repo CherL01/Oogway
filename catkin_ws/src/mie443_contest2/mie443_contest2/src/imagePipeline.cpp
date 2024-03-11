@@ -56,7 +56,6 @@ int ImagePipeline::getTemplateID(Boxes& boxes) {
             return -1;
         }
 
-
         //-- Step 1: Detect the keypoints using SURF Detector, compute the descriptors
         int minHessian = 400;
         Ptr<SURF> detector = SURF::create( minHessian );
