@@ -1,6 +1,15 @@
 #include <imagePipeline.h>
 
 // Henry added
+#include <iostream>
+#include "opencv2/core.hpp"
+//#ifdef HAVE_OPENCV_XFEATURES2D
+#include "opencv2/calib3d.hpp"
+#include "opencv2/highgui.hpp"
+#include "opencv2/imgproc.hpp"
+#include "opencv2/features2d.hpp"
+#include "opencv2/xfeatures2d.hpp"
+
 using namespace cv;
 using namespace cv::xfeatures2d;
 using std::cout;
@@ -47,7 +56,7 @@ int ImagePipeline::getTemplateID(Boxes& boxes) {
     } else {
         /***YOUR CODE HERE***/
 
-        Mat img_object = boxes.template[0];
+        Mat img_object = boxes.templates[0];
         Mat img_scene = img;
         if ( img_object.empty() || img_scene.empty() )
         {
