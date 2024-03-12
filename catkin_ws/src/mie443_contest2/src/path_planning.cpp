@@ -3,11 +3,10 @@
 #include <chrono>
 #include <bits/stdc++.h>
 using namespace std;
-#define V 6
 
 // cost function: Euclidean Distance
 
-double euclidean_dist(std::vector<float> object1, std::vector<float> object2) {
+double euclideanDist(vector<float> object1, vector<float> object2) {
     double x = object1[0] - object2[0];
     double y = object1[1] - object2[1];
     double dist;
@@ -18,34 +17,41 @@ double euclidean_dist(std::vector<float> object1, std::vector<float> object2) {
 
 // path solver: brute force
 
-int travllingSalesmanProblem(double graph[V][V], int s) {
+vector<int> travllingSalesmanProblem(vector<vector<double>> graph, int s) {
 
-    std::vector<vector> possible_solution_list; 
-
-    std::vector<double> vertex;
-    for (int i = 0; i < V; i++)
+    // put all nodes other than start into a vector
+    vector<int> vertex;
+    for (int i = 0; i < graph.size(); i++)
         if (i != s)
             vertex.push_back(i);
  
-    int min_path = INT_MAX;
+    // save minimum path
+    double min_path_cost = INT_MAX;
+    vector<int> min_path = vertex;
     do {
-        int current_pathweight = 0;
-        possible_solution_list.erase(possible_solution_list.begin(), possible_solution_list.end());
+        double current_pathweight = 0;
  
         int k = s;
         for (int i = 0; i < vertex.size(); i++) {
             current_pathweight += graph[k][vertex[i]];
             k = vertex[i];
-            possible_solution_list.push_back(k);
         }
         current_pathweight += graph[k][s];
 
-        if (current_pathweight < min_path){
-            solution_list.erase(solution_list.begin(), solution_list.end());
-            for (int i = 0; i < possible_solution_list.size(); i++) {
-                solution_list.push_back(possible_solution_list[i]);
-            	}
+        if (current_pathweight < min_path_cost){
+            min_path.clear();
+            for (auto i: vertex) 
+                min_path.push_back(i);
 	    }
+
+        // update minimum
+        min_path_cost = min(min_path_cost, current_pathweight);
+
+        // for (auto i: vertex) 
+        //     cout << i << ' ';
+        // cout << "\n";
+        // cout << current_pathweight;
+        // cout << "\n";
  
     } while (
         next_permutation(vertex.begin(), vertex.end()));
@@ -55,29 +61,31 @@ int travllingSalesmanProblem(double graph[V][V], int s) {
 
 // sort euclidean distances into graph
 
-double sort_graph(std::vector<vector<float>> objects) {
-    unsigned int objects_size = objects.size();
-    double graph[V][V];
+vector<vector<double>> sortGraph(vector<vector<float>> objects) {
+    int objects_size = objects.size();
+    vector<vector<double>> graph;
 
-    for (unsigned int row = 0; row < objects_size; row++) {
-        for (unsigned int col = 0; col < objects_size; col++) {
-            graph[row][col] = euclidean_dist(objects[row], objects[col]);
+    for (int row = 0; row < objects_size; row++) {
+        vector<double> temp_row;
+        for (int col = 0; col < objects_size; col++) {
+            temp_row.push_back(euclideanDist(objects[row], objects[col]));
         }
+        graph.push_back(temp_row);
     }
 
     return graph;
 
 }
 
-int main()
-{
-    std::vector objects[6];
-    // matrix representation of graph
-    int graph[][V] = { { 0, 10, 15, 20 },
-                       { 10, 0, 35, 25 },
-                       { 15, 35, 0, 30 },
-                       { 20, 25, 30, 0 } };
-    int s = 0;
-    cout << travllingSalesmanProblem(graph, s) << endl;
-    return 0;
-}
+// int main()
+// {
+//     vector objects[6];
+//     // matrix representation of graph
+//     int graph[][V] = { { 0, 10, 15, 20 },
+//                        { 10, 0, 35, 25 },
+//                        { 15, 35, 0, 30 },
+//                        { 20, 25, 30, 0 } };
+//     int s = 0;
+//     cout << travllingSalesmanProblem(graph, s) << endl;
+//     return 0;
+// }
