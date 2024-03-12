@@ -56,43 +56,114 @@ int ImagePipeline::getTemplateID(Boxes& boxes) {
     } else {
         /***YOUR CODE HERE***/
 
-        Mat img_object = boxes.templates[0];            // need to cycle through all the templates?
-        Mat img_scene = img;
-        if ( img_object.empty() || img_scene.empty() )
-        {
-            cout << "Could not open or find the image!\n" << endl;
-            //parser.printMessage();
-            return -1;
-        }
-
-        //-- Step 1: Detect the keypoints using SURF Detector, compute the descriptors
-        int minHessian = 400;
-        Ptr<SURF> detector = SURF::create( minHessian );
+        // Iterate 3 times through all the templates, initialize some variables
+        Mat img_object;
+        Mat img_scene;
         std::vector<KeyPoint> keypoints_object, keypoints_scene;
         Mat descriptors_object, descriptors_scene;
-        detector->detectAndCompute( img_object, noArray(), keypoints_object, descriptors_object );
-        detector->detectAndCompute( img_scene, noArray(), keypoints_scene, descriptors_scene );
-        
-        //-- Step 2: Matching descriptor vectors with a FLANN based matcher
-        // Since SURF is a floating-point descriptor NORM_L2 is used
-        Ptr<DescriptorMatcher> matcher = DescriptorMatcher::create(DescriptorMatcher::FLANNBASED);
-        std::vector< std::vector<DMatch> > knn_matches;
-        matcher->knnMatch( descriptors_object, descriptors_scene, knn_matches, 2 );
-        
-        //-- Filter matches using the Lowe's ratio test
-        const float ratio_thresh = 0.75f;
+            
+        int prev_good_matches=0;
+
         std::vector<DMatch> good_matches;
-        for (size_t i = 0; i < knn_matches.size(); i++)
-        {
-            if (knn_matches[i][0].distance < ratio_thresh * knn_matches[i][1].distance)
+
+        for (int counter=0;counter<3;counter++) {
+            std::cout << "--template number "<< counter << std::endl;
+        
+            img_object = boxes.templates[counter];            // need to cycle through all the templates?
+            img_scene = img;
+            imshow("cereal", img);
+            cv::waitKey(1000);
+            if ( img_object.empty() || img_scene.empty() )
             {
-                good_matches.push_back(knn_matches[i][0]);
+                cout << "Could not open or find the image!\n" << endl;
+                //parser.printMessage();
+                return -1;
+            }
+
+            //-- Step 1: Detect the keypoints using SURF Detector, compute the descriptors
+            int minHessian = 400;
+            Ptr<SURF> detector = SURF::create( minHessian );
+            // std::vector<KeyPoint> keypoints_object, keypoints_scene;
+            // Mat descriptors_object, descriptors_scene;
+            detector->detectAndCompute( img_object, noArray(), keypoints_object, descriptors_object );
+            detector->detectAndCompute( img_scene, noArray(), keypoints_scene, descriptors_scene );
+            
+            //-- Step 2: Matching descriptor vectors with a FLANN based matcher
+            // Since SURF is a floating-point descriptor NORM_L2 is used
+            Ptr<DescriptorMatcher> matcher = DescriptorMatcher::create(DescriptorMatcher::FLANNBASED);
+            std::vector< std::vector<DMatch> > knn_matches;
+            matcher->knnMatch( descriptors_object, descriptors_scene, knn_matches, 2 );
+            
+            //-- Filter quality of matches using the Lowe's ratio test
+            const float ratio_thresh = 0.75f;
+            // std::vector<DMatch> good_matches;
+            for (size_t i = 0; i < knn_matches.size(); i++)
+            {
+                if (knn_matches[i][0].distance < ratio_thresh * knn_matches[i][1].distance)
+                {
+                    good_matches.push_back(knn_matches[i][0]);
+                }
+            }
+            std::cout << "----matches size: "<< good_matches.size() << std::endl;
+
+            // Template with most matches gets id saved
+            if (good_matches.size() >= prev_good_matches) {
+                template_id = counter;
             }
         }
+        
+        img_object = boxes.templates[template_id];
+        //-- Draw matches - good keypoint matches visualized between object and scene
+        Mat img_matches;
+        drawMatches( img_object, keypoints_object, img_scene, keypoints_scene, good_matches, img_matches, Scalar::all(-1),
+                Scalar::all(-1), std::vector<char>(), DrawMatchesFlags::NOT_DRAW_SINGLE_POINTS );
+        
+        //-- Localize the object
+        std::vector<Point2f> obj;
+        std::vector<Point2f> scene;
+        for( size_t i = 0; i < good_matches.size(); i++ )
+        {
+            //-- Get the keypoints from the good matches - separate into obj and scene
+            obj.push_back( keypoints_object[ good_matches[i].queryIdx ].pt );
+            scene.push_back( keypoints_scene[ good_matches[i].trainIdx ].pt );
+        }
+        Mat H = findHomography( obj, scene, RANSAC );
 
+        // // check which template has the most img_matches vs. img
+        // if (img_matches.size() > prev_img_matches.size()) {
+        //     prev_img_matches = img_matches;
+        // }
+        
+        //-- Get the corners from the image_1 ( the object to be "detected" )
+        std::vector<Point2f> obj_corners(4);
+        obj_corners[0] = Point2f(0, 0);
+        obj_corners[1] = Point2f( (float)img_object.cols, 0 );
+        obj_corners[2] = Point2f( (float)img_object.cols, (float)img_object.rows );
+        obj_corners[3] = Point2f( 0, (float)img_object.rows );
+        std::vector<Point2f> scene_corners(4);
+        perspectiveTransform( obj_corners, scene_corners, H);
+        
+        //-- Draw lines between the corners (the mapped object in the scene - image_2 )
+        line( img_matches, scene_corners[0] + Point2f((float)img_object.cols, 0),
+            scene_corners[1] + Point2f((float)img_object.cols, 0), Scalar(0, 255, 0), 4 );
+        line( img_matches, scene_corners[1] + Point2f((float)img_object.cols, 0),
+            scene_corners[2] + Point2f((float)img_object.cols, 0), Scalar( 0, 255, 0), 4 );
+        line( img_matches, scene_corners[2] + Point2f((float)img_object.cols, 0),
+            scene_corners[3] + Point2f((float)img_object.cols, 0), Scalar( 0, 255, 0), 4 );
+        line( img_matches, scene_corners[3] + Point2f((float)img_object.cols, 0),
+            scene_corners[0] + Point2f((float)img_object.cols, 0), Scalar( 0, 255, 0), 4 );
+        
+        //-- Show detected matches**
+        imshow("Good Matches & Object detection", img_matches );
+        cv::waitKey(1000);
+        //return 0;
+
+        
+        
         // Use: boxes.templates
-        cv::imshow("view", img);
+        //cv::imshow("view", img);
         cv::waitKey(10);
+
     }  
     return template_id;
 }

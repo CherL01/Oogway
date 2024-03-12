@@ -12,7 +12,7 @@ int main(int argc, char** argv) {
     RobotPose robotPose(0,0,0);
 
     ros::Subscriber amclSub = n.subscribe("/amcl_pose", 1, &RobotPose::poseCallback, &robotPose);
-        // Initialize box coordinates and templates
+    // Initialize box coordinates and templates
     Boxes boxes; 
     if(!boxes.load_coords() || !boxes.load_templates()) {
         std::cout << "ERROR: could not load coords or templates" << std::endl;
