@@ -56,7 +56,7 @@ int ImagePipeline::getTemplateID(Boxes& boxes) {
     } else {
         /***YOUR CODE HERE***/
 
-        Mat img_object = boxes.templates[0];
+        Mat img_object = boxes.templates[0];            // need to cycle through all the templates?
         Mat img_scene = img;
         if ( img_object.empty() || img_scene.empty() )
         {
