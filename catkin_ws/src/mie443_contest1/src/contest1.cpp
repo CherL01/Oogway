@@ -98,7 +98,7 @@ int main(int argc, char **argv)
 
         //// Check for speed limit
 
-        if ((leftLaserDist < slowDownLimit || rightLaserDist < slowDownLimit) && minLaserDist < slowDownLimit)
+        if (minLaserDist < slowDownLimit &&(( leftLaserDist < slowDownLimit || rightLaserDist < slowDownLimit) && minLaserDist < slowDownLimit))
         {
             turtleSpeed = slowDown;
             turtleAngle = slowDownAngular;
@@ -186,6 +186,19 @@ int main(int argc, char **argv)
                     
                 }
 
+                else if (subStepsCount == 4)
+                {
+                    targetYaw = yaw +90;
+                    turnCCW(targetYaw, angular, linear, remainingYaw, turtleAngle);
+                    subStepsCount = 0;
+                    stepsCount = TRAVEL_STEP;
+                    maxLaserDist = 0.0;
+                    ROS_INFO("Entering Travel mode");
+
+                    travelLoop = 0;
+
+                }
+
 
             }
 
@@ -244,7 +257,7 @@ int main(int argc, char **argv)
                     }
 
                     // move forward in small increments in narrow paths
-                    if (secondsElapsed>240 && travelLoop >10 && leftLaserDist<minLaserDist && rightLaserDist<minLaserDist)
+                    if (secondsElapsed>240 && travelLoop >10 && (0.2<minLaserDist-leftLaserDist || 0.2<minLaserDist-rightLaserDist))
                     {
                         //break;
                         currentX = posX;
@@ -292,8 +305,15 @@ int main(int argc, char **argv)
                 targetDist = 0.2;
 
                 moveBack(targetDist, currentX, currentY, angular, linear, turtleSpeed);
+
                 stepsCount = SCAN_STEP;
                 subStepsCount = 0;
+
+                if (!(minLaserDist < slowDownLimit &&(( leftLaserDist < slowDownLimit || rightLaserDist < slowDownLimit) && minLaserDist < slowDownLimit)))
+                {
+                    stepsCount = SCAN_STEP;
+                    subStepsCount = 4;
+                }
 
             }
 

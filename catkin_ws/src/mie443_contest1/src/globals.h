@@ -63,7 +63,7 @@ extern int turning;
 extern bool isMoving;
 
 const float normal=0.25, slowDown=0.1; //speed settings
-const float normalAngular = M_PI/6, slowDownAngular = M_PI/4; //turn faster when close to walls during scanning
+const float normalAngular = M_PI/6, slowDownAngular = M_PI/3; //turn faster when close to walls during scanning
 
 extern float turtleSpeed; //speed override
 extern float turtleAngle; //angular spped override
