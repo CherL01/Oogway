@@ -6,11 +6,11 @@
 
 #IncludeRegexTransform: 
 
-/home/hqi-oogway/Oogway/catkin_ws/src/mie443_contest1/include/EnvironmentSearch.h
+/home/tuesday2023/Oogway/catkin_ws/src/mie443_contest1/include/EnvironmentSearch.h
 ros/console.h
 -
 ros/ros.h
-/home/hqi-oogway/Oogway/catkin_ws/src/mie443_contest1/include/ros/ros.h
+/home/tuesday2023/Oogway/catkin_ws/src/mie443_contest1/include/ros/ros.h
 geometry_msgs/Twist.h
 -
 kobuki_msgs/BumperEvent.h
@@ -30,15 +30,15 @@ chrono
 thread
 -
 
-/home/hqi-oogway/Oogway/catkin_ws/src/mie443_contest1/src/EnvironmentSearch.cpp
+/home/tuesday2023/Oogway/catkin_ws/src/mie443_contest1/src/EnvironmentSearch.cpp
 EnvironmentSearch.h
-/home/hqi-oogway/Oogway/catkin_ws/src/mie443_contest1/src/EnvironmentSearch.h
+/home/tuesday2023/Oogway/catkin_ws/src/mie443_contest1/src/EnvironmentSearch.h
 
-/home/hqi-oogway/Oogway/catkin_ws/src/mie443_contest1/src/contest1.cpp
+/home/tuesday2023/Oogway/catkin_ws/src/mie443_contest1/src/contest1.cpp
 ros/console.h
 -
 ros/ros.h
-/home/hqi-oogway/Oogway/catkin_ws/src/mie443_contest1/src/ros/ros.h
+/home/tuesday2023/Oogway/catkin_ws/src/mie443_contest1/src/ros/ros.h
 geometry_msgs/Twist.h
 -
 kobuki_msgs/BumperEvent.h
@@ -56,7 +56,7 @@ cmath
 chrono
 -
 EnvironmentSearch.h
-/home/hqi-oogway/Oogway/catkin_ws/src/mie443_contest1/src/EnvironmentSearch.h
+/home/tuesday2023/Oogway/catkin_ws/src/mie443_contest1/src/EnvironmentSearch.h
 
 /opt/ros/kinetic/include/geometry_msgs/Point.h
 string
