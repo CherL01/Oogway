@@ -30,7 +30,6 @@ int main(int argc, char** argv) {
     }
     // Initialize image objectand subscriber.
     ImagePipeline imagePipeline(n);
-    std::cout << "Past Image Pipeline." << std::endl;
     // contest count down timer
     std::chrono::time_point<std::chrono::system_clock> start;
     start = std::chrono::system_clock::now();
@@ -69,8 +68,9 @@ int main(int argc, char** argv) {
             // calculate shortest path
             std::vector<float> temp_vec = {start_x, start_y, start_z};
             view_coords.push_back(temp_vec);
+            std::cout << "VIEW COORDS SIZE:" << view_coords.size() << std::endl;
             std::vector<vector<float>> sorted_graph = sortGraph(view_coords);
-            int start_node = view_coords.size();
+            int start_node = view_coords.size() - 1;
             std::vector<int> min_path = travellingSalesmanProblem(sorted_graph, start_node);
             box_count = 0;
         }

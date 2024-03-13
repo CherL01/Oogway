@@ -1,6 +1,5 @@
 {
     "files.associations": {
-        "vector": "cpp",
         "cctype": "cpp",
         "clocale": "cpp",
         "cmath": "cpp",
@@ -30,6 +29,7 @@
         "list": "cpp",
         "unordered_map": "cpp",
         "unordered_set": "cpp",
+        "vector": "cpp",
         "exception": "cpp",
         "algorithm": "cpp",
         "functional": "cpp",
