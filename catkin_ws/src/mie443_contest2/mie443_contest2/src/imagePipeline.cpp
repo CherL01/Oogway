@@ -83,7 +83,7 @@ int ImagePipeline::getTemplateID(Boxes& boxes) {
             img_scene = img;
             // Show the image it sees on the box
             // imshow("cereal", img);
-            cv::waitKey(1000);
+            cv::waitKey(10);
             if ( img_object.empty() || img_scene.empty() )
             {
                 cout << "Could not open or find the image!\n" << endl;
@@ -232,5 +232,7 @@ todo:
 
 figure out how to pop out the image we want, how to "select" template
 
+mie443 laptop amcl line
+roslaunch turtlebot_gazebo amcl_demo.launch map_file:=/home/tuesday2023/Oogway/catkin_ws/src/mie443_contest2/mie443_contest2/maps/map_1.yaml
 
 */

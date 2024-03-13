@@ -1,3 +1,4 @@
+/*
 #include <boxes.h>
 #include <navigation.h>
 #include <robot_pose.h>
@@ -221,7 +222,9 @@ int main(int argc, char** argv) {
     return 0;
 }
 
-/* ----Henry's ----
+*/
+
+///* ----Henry's ----
 
 #include <boxes.h>
 #include <navigation.h>
@@ -229,6 +232,8 @@ int main(int argc, char** argv) {
 #include <imagePipeline.h>
 #include <chrono>
 #include <cmath>
+
+bool first=true;
 int main(int argc, char** argv) {
     // Setup ROS.
     ros::init(argc, argv, "contest2");
@@ -250,7 +255,7 @@ int main(int argc, char** argv) {
     }
     // Initialize image objectand subscriber.
     ImagePipeline imagePipeline(n);
-    int final_output[6];    // stores template_id of each box in order
+    int final_output[5];    // stores template_id of each box in order
 
     // contest count down timer
     std::chrono::time_point<std::chrono::system_clock> start;
@@ -271,7 +276,8 @@ int main(int argc, char** argv) {
             start_x = robotPose.x;
             start_y = robotPose.y;
             start_z = robotPose.phi;
-            Navigation::moveToGoal(start_x, start_y, start_z+ M_PI);
+            if (Navigation::moveToGoal(start_x, start_y, start_z+ M_PI))
+            {ros::spinOnce();}
             
         }
         
@@ -282,17 +288,29 @@ int main(int argc, char** argv) {
         ROS_INFO("At: %f,%f,%f", robotPose.x, robotPose.y, robotPose.phi);
         ROS_INFO("GOING to: %f,%f,%f", x, y, z);
 
-        bool success = Navigation::moveToGoal(x, y, z);
+        if (Navigation::moveToGoal(x, y, z))
+        {
+            ros::spinOnce();
+            final_output[box_count] = imagePipeline.getTemplateID(boxes); // returns template_id integer (-1 for blank)
+            secondsElapsed = std::chrono::duration_cast<std::chrono::seconds>(std::chrono::system_clock::now()-start).count();
+            box_count++;
+            // if (first) 
+            // {
+            //     box_count--;
+            //     first =!first;
+            //     }
+            
+        }
+            
         
-        final_output[box_count] = imagePipeline.getTemplateID(boxes); // returns template_id integer (-1 for blank)
-        secondsElapsed = std::chrono::duration_cast<std::chrono::seconds>(std::chrono::system_clock::now()-start).count();
-        if (success) box_count++;
+        //final_output[box_count] = imagePipeline.getTemplateID(boxes); // returns template_id integer (-1 for blank)
+        //secondsElapsed = std::chrono::duration_cast<std::chrono::seconds>(std::chrono::system_clock::now()-start).count();
+        //if (success) box_count++;
 
         if (box_count == 5) 
         {   
             Navigation::moveToGoal(start_x, start_y, start_z);
             uint64_t finalTime = std::chrono::duration_cast<std::chrono::seconds>(std::chrono::system_clock::now()-start).count();
-            final_output[box_count+1] = imagePipeline.getTemplateID(boxes);
 
             // ROS_INFO("Finished in: %f", finalTime);
             std::cout << "Finished in:" << std:: endl;
@@ -311,7 +329,6 @@ int main(int argc, char** argv) {
     std::cout<< "Final output 3: " << final_output[2] << std::endl;
     std::cout<< "Final output 4: " << final_output[3] << std::endl;
     std::cout<< "Final output 5: " << final_output[4] << std::endl;
-    std::cout<< "Final output 6: " << final_output[5] << std::endl;
     return 0;
 }
-*/
+// if fails to find path, don't take images
