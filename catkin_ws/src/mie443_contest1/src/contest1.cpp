@@ -98,7 +98,7 @@ int main(int argc, char **argv)
 
         //// Check for speed limit
 
-        if (leftLaserDist < slowDownLimit || rightLaserDist < slowDownLimit || minLaserDist < slowDownLimit)
+        if ((leftLaserDist < slowDownLimit || rightLaserDist < slowDownLimit) && minLaserDist < slowDownLimit)
         {
             turtleSpeed = slowDown;
             turtleAngle = slowDownAngular;
