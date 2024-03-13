@@ -59,12 +59,14 @@ int ImagePipeline::getTemplateID(Boxes& boxes) {
         // Iterate 3 times through all the templates, initialize some variables
         Mat img_object;
         Mat img_scene;
-        std::vector<KeyPoint> keypoints_object, keypoints_scene;
+        //std::vector<KeyPoint> keypoints_object, keypoints_scene;
+        std::vector<KeyPoint> keypoints_object_chosen, keypoints_scene_chosen;
         Mat descriptors_object, descriptors_scene;
             
         int prev_good_matches=0;
 
-        std::vector<DMatch> good_matches;
+        //std::vector<DMatch> good_matches;
+        std::vector<DMatch> chosen_matches;
 
         for (int counter=0;counter<3;counter++) {
             std::cout << "--template number "<< counter << std::endl;
@@ -81,9 +83,9 @@ int ImagePipeline::getTemplateID(Boxes& boxes) {
             }
 
             //-- Step 1: Detect the keypoints using SURF Detector, compute the descriptors
-            int minHessian = 400;
+            int minHessian = 800;
             Ptr<SURF> detector = SURF::create( minHessian );
-            // std::vector<KeyPoint> keypoints_object, keypoints_scene;
+            std::vector<KeyPoint> keypoints_object, keypoints_scene;
             // Mat descriptors_object, descriptors_scene;
             detector->detectAndCompute( img_object, noArray(), keypoints_object, descriptors_object );
             detector->detectAndCompute( img_scene, noArray(), keypoints_scene, descriptors_scene );
@@ -92,11 +94,11 @@ int ImagePipeline::getTemplateID(Boxes& boxes) {
             // Since SURF is a floating-point descriptor NORM_L2 is used
             Ptr<DescriptorMatcher> matcher = DescriptorMatcher::create(DescriptorMatcher::FLANNBASED);
             std::vector< std::vector<DMatch> > knn_matches;
-            matcher->knnMatch( descriptors_object, descriptors_scene, knn_matches, 2 );
+            matcher->knnMatch( descriptors_object, descriptors_scene, knn_matches, 5 );
             
             //-- Filter quality of matches using the Lowe's ratio test
-            const float ratio_thresh = 0.75f;
-            // std::vector<DMatch> good_matches;
+            const float ratio_thresh = 0.70f;
+            std::vector<DMatch> good_matches;
             for (size_t i = 0; i < knn_matches.size(); i++)
             {
                 if (knn_matches[i][0].distance < ratio_thresh * knn_matches[i][1].distance)
@@ -108,31 +110,31 @@ int ImagePipeline::getTemplateID(Boxes& boxes) {
 
             // Template with most matches gets id saved
             if (good_matches.size() >= prev_good_matches) {
+                prev_good_matches = good_matches.size();
                 template_id = counter;
+                chosen_matches = good_matches;
+                keypoints_object_chosen=keypoints_object;
+                keypoints_scene_chosen=keypoints_scene;
             }
         }
-        
+
+        std::cout << "----template id chosen: "<< template_id << std::endl;
         img_object = boxes.templates[template_id];
         //-- Draw matches - good keypoint matches visualized between object and scene
         Mat img_matches;
-        drawMatches( img_object, keypoints_object, img_scene, keypoints_scene, good_matches, img_matches, Scalar::all(-1),
+        drawMatches( img_object, keypoints_object_chosen, img_scene, keypoints_scene_chosen, chosen_matches, img_matches, Scalar::all(-1),
                 Scalar::all(-1), std::vector<char>(), DrawMatchesFlags::NOT_DRAW_SINGLE_POINTS );
         
         //-- Localize the object
         std::vector<Point2f> obj;
         std::vector<Point2f> scene;
-        for( size_t i = 0; i < good_matches.size(); i++ )
+        for( size_t i = 0; i < chosen_matches.size(); i++ )
         {
             //-- Get the keypoints from the good matches - separate into obj and scene
-            obj.push_back( keypoints_object[ good_matches[i].queryIdx ].pt );
-            scene.push_back( keypoints_scene[ good_matches[i].trainIdx ].pt );
+            obj.push_back( keypoints_object_chosen[ chosen_matches[i].queryIdx ].pt );
+            scene.push_back( keypoints_scene_chosen[ chosen_matches[i].trainIdx ].pt );
         }
         Mat H = findHomography( obj, scene, RANSAC );
-
-        // // check which template has the most img_matches vs. img
-        // if (img_matches.size() > prev_img_matches.size()) {
-        //     prev_img_matches = img_matches;
-        // }
         
         //-- Get the corners from the image_1 ( the object to be "detected" )
         std::vector<Point2f> obj_corners(4);
@@ -153,7 +155,7 @@ int ImagePipeline::getTemplateID(Boxes& boxes) {
         line( img_matches, scene_corners[3] + Point2f((float)img_object.cols, 0),
             scene_corners[0] + Point2f((float)img_object.cols, 0), Scalar( 0, 255, 0), 4 );
         
-        //-- Show detected matches**
+        //-- Show detected matches
         imshow("Good Matches & Object detection", img_matches );
         cv::waitKey(1000);
         //return 0;
