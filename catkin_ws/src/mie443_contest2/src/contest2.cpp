@@ -1,10 +1,13 @@
+#include "path_planning.cpp"
+
 #include <boxes.h>
 #include <navigation.h>
 #include <robot_pose.h>
 #include <imagePipeline.h>
 #include <chrono>
 #include <cmath>
-#include "path_planning.cpp"
+// #include <path_planning.h>
+
 
 int main(int argc, char** argv) {
     // Setup ROS.
@@ -36,6 +39,7 @@ int main(int argc, char** argv) {
     float start_x;
     float start_y;
     float start_z;
+    std::vector<int> min_path;
 
     // calculate viewing location coordinates
     std::vector<std::vector<float>> view_coords;
@@ -65,10 +69,10 @@ int main(int argc, char** argv) {
             // calculate shortest path
             std::vector<float> temp_vec = {start_x, start_y, start_z};
             view_coords.push_back(temp_vec);
-            std::vector<vector<double>> sorted_graph = sortGraph(view_coords);
+            std::vector<vector<float>> sorted_graph = sortGraph(view_coords);
             int start_node = view_coords.size();
-            std::vector<int> min_path = travllingSalesmanProblem(sorted_graph, start_node);
-            box_count = 0
+            std::vector<int> min_path = travellingSalesmanProblem(sorted_graph, start_node);
+            box_count = 0;
         }
         
         // float z = boxes.coords[box_count][2] - M_PI; // -2.3

@@ -17,7 +17,7 @@ float euclideanDist(vector<float> object1, vector<float> object2) {
 
 // path solver: brute force
 
-vector<int> travllingSalesmanProblem(vector<vector<float>> graph, int s) {
+vector<int> travellingSalesmanProblem(vector<vector<float>> graph, int s) {
 
     // put all nodes other than start into a vector
     vector<int> vertex;

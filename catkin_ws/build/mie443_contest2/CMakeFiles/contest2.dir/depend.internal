@@ -240,6 +240,7 @@ mie443_contest2/CMakeFiles/contest2.dir/src/contest2.cpp.o
  /home/tuesday2023/Oogway/catkin_ws/src/mie443_contest2/include/navigation.h
  /home/tuesday2023/Oogway/catkin_ws/src/mie443_contest2/include/robot_pose.h
  /home/tuesday2023/Oogway/catkin_ws/src/mie443_contest2/src/contest2.cpp
+ /home/tuesday2023/Oogway/catkin_ws/src/mie443_contest2/src/path_planning.cpp
  /opt/ros/kinetic/include/cv_bridge/cv_bridge.h
  /opt/ros/kinetic/include/geometry_msgs/Point.h
  /opt/ros/kinetic/include/geometry_msgs/PointStamped.h

@@ -43,6 +43,8 @@ boxes.h
 -
 
 /home/tuesday2023/Oogway/catkin_ws/src/mie443_contest2/src/contest2.cpp
+path_planning.cpp
+/home/tuesday2023/Oogway/catkin_ws/src/mie443_contest2/src/path_planning.cpp
 boxes.h
 -
 navigation.h
@@ -52,6 +54,8 @@ robot_pose.h
 imagePipeline.h
 -
 chrono
+-
+cmath
 -
 
 /home/tuesday2023/Oogway/catkin_ws/src/mie443_contest2/src/imagePipeline.cpp
@@ -66,6 +70,16 @@ actionlib/client/simple_action_client.h
 move_base_msgs/MoveBaseAction.h
 -
 tf/transform_datatypes.h
+-
+
+/home/tuesday2023/Oogway/catkin_ws/src/mie443_contest2/src/path_planning.cpp
+iostream
+-
+math.h
+-
+chrono
+-
+bits/stdc++.h
 -
 
 /home/tuesday2023/Oogway/catkin_ws/src/mie443_contest2/src/robot_pose.cpp
