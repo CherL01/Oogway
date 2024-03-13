@@ -13,7 +13,7 @@ int main()
     vector<vector<float>> sorted_graph = sortGraph(test_graph);
     int start_node = 0;
 
-    vector<int> min_path = travllingSalesmanProblem(sorted_graph, start_node);
+    vector<int> min_path = travellingSalesmanProblem(sorted_graph, start_node);
 
     for (auto i: min_path) 
         cout << i << ' ';
