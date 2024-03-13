@@ -102,8 +102,8 @@ int main(int argc, char** argv) {
         y = newBoxes.coords[i][1] + normDist*std::sin(newBoxes.coords[i][2]);
 
         
-        //while (!getPlan(robotPose.x, robotPose.y, robotPose.phi, x,y,z))
-        while (true)
+        while (!getPlan(robotPose.x, robotPose.y, robotPose.phi, x,y,z))
+        //while (true)
         {
             
             z = newBoxes.coords[i][2]+deltAngle/180*M_PI - M_PI;
@@ -114,7 +114,7 @@ int main(int argc, char** argv) {
             {
                 ROS_INFO("Valid Path! Updating coordinates to %f, %f, %f...", x,y,z);
                 ROS_INFO("Delta angle is: %f and normal distance is: %f", deltAngle, normDist);
-                //break;
+                break;
             }
             else 
             {
