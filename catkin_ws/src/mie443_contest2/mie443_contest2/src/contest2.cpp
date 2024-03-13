@@ -57,15 +57,20 @@ int main(int argc, char** argv) {
 
         bool success = Navigation::moveToGoal(x, y, z);
         if (success) box_count++;
+
+        imagePipeline.getTemplateID(boxes);
+        secondsElapsed = std::chrono::duration_cast<std::chrono::seconds>(std::chrono::system_clock::now()-start).count();
+        
         if (box_count == 5) 
         {   
             Navigation::moveToGoal(start_x, start_y, start_z);
-            secondsElapsed = std::chrono::duration_cast<std::chrono::seconds>(std::chrono::system_clock::now()-start).count();
+            uint64_t finalTime = std::chrono::duration_cast<std::chrono::seconds>(std::chrono::system_clock::now()-start).count();
 
-            ROS_INFO("Finsihed in: %f", secondsElapsed);
+            // ROS_INFO("Finished in: %f", finalTime);
+            std::cout << "Finished in:" << std:: endl;
+            std::cout << finalTime;
             break;}
-        imagePipeline.getTemplateID(boxes);
-        secondsElapsed = std::chrono::duration_cast<std::chrono::seconds>(std::chrono::system_clock::now()-start).count();
+        
         std::cout << "Time Elapsed:" << std:: endl;
         std::cout << secondsElapsed;
         ros::Duration(0.01).sleep();

@@ -15,6 +15,11 @@ using namespace cv::xfeatures2d;
 using std::cout;
 using std::endl;
 
+// Check for cereal box repeats
+int rb_count=0;
+int ct_count=0;
+int rk_count=0;
+
 //input1: box -> template, input2: boxinscene -> img
 const char* keys =
         "{ help h |                          | Print help message. }"
@@ -27,7 +32,7 @@ const char* keys =
 ImagePipeline::ImagePipeline(ros::NodeHandle& n) {
     image_transport::ImageTransport it(n);
     sub = it.subscribe(IMAGE_TOPIC, 1, &ImagePipeline::imageCallback, this);
-    isValid = false;
+    // isValid = false;
 }
 
 void ImagePipeline::imageCallback(const sensor_msgs::ImageConstPtr& msg) {
@@ -56,7 +61,7 @@ int ImagePipeline::getTemplateID(Boxes& boxes) {
     } else {
         /***YOUR CODE HERE***/
 
-        // Iterate 3 times through all the templates, initialize some variables
+        // Initialize variables
         Mat img_object;
         Mat img_scene;
         //std::vector<KeyPoint> keypoints_object, keypoints_scene;
@@ -67,13 +72,16 @@ int ImagePipeline::getTemplateID(Boxes& boxes) {
 
         //std::vector<DMatch> good_matches;
         std::vector<DMatch> chosen_matches;
+        int matches_threshold = 40;
 
+        // Iterate 3 times through all the templates, initialize some variables
         for (int counter=0;counter<3;counter++) {
             std::cout << "--template number "<< counter << std::endl;
         
             img_object = boxes.templates[counter];            // need to cycle through all the templates?
             img_scene = img;
-            imshow("cereal", img);
+            // Show the image it sees on the box
+            // imshow("cereal", img);
             cv::waitKey(1000);
             if ( img_object.empty() || img_scene.empty() )
             {
@@ -83,7 +91,7 @@ int ImagePipeline::getTemplateID(Boxes& boxes) {
             }
 
             //-- Step 1: Detect the keypoints using SURF Detector, compute the descriptors
-            int minHessian = 800;
+            int minHessian = 600;
             Ptr<SURF> detector = SURF::create( minHessian );
             std::vector<KeyPoint> keypoints_object, keypoints_scene;
             // Mat descriptors_object, descriptors_scene;
@@ -108,7 +116,7 @@ int ImagePipeline::getTemplateID(Boxes& boxes) {
             }
             std::cout << "----matches size: "<< good_matches.size() << std::endl;
 
-            // Template with most matches gets id saved
+            // Template with most matches gets id saved, important variables saved
             if (good_matches.size() >= prev_good_matches) {
                 prev_good_matches = good_matches.size();
                 template_id = counter;
@@ -116,6 +124,11 @@ int ImagePipeline::getTemplateID(Boxes& boxes) {
                 keypoints_object_chosen=keypoints_object;
                 keypoints_scene_chosen=keypoints_scene;
             }
+        }
+
+        if (chosen_matches.size() < matches_threshold) {
+            std::cout << "----Box is BLANK!!---- " << std::endl;
+            return -1;
         }
 
         std::cout << "----template id chosen: "<< template_id << std::endl;
@@ -156,11 +169,38 @@ int ImagePipeline::getTemplateID(Boxes& boxes) {
             scene_corners[0] + Point2f((float)img_object.cols, 0), Scalar( 0, 255, 0), 4 );
         
         //-- Show detected matches
-        imshow("Good Matches & Object detection", img_matches );
-        cv::waitKey(1000);
+        // imshow("Good Matches & Object Detection", img_matches );
+        // cv::waitKey(1000);
         //return 0;
 
+        if (rb_count>0 && template_id==0) {
+            imshow("(REPEAT) RAISIN BRAN - Good Matches & Object Detection", img_matches );
+            cv::waitKey(1000);
         
+        } else if (ct_count>0 && template_id==1) {
+            imshow("(REPEAT) CINNAMON TOAST - Good Matches & Object Detection", img_matches );
+            cv::waitKey(1000);
+        
+        } else if (rk_count>0 && template_id==2) {
+            imshow("(REPEAT) RICE KRISPIES - Good Matches & Object Detection", img_matches );
+            cv::waitKey(1000);
+        
+        } else if (template_id==0) {
+            imshow("RAISIN BRAN - Good Matches & Object Detection", img_matches );
+            cv::waitKey(1000);
+            rb_count++;
+        
+        } else if (template_id==1) {
+            imshow("CINNAMON TOAST - Good Matches & Object Detection", img_matches );
+            cv::waitKey(1000);
+            ct_count++;
+        
+        } else if (template_id==2) {
+            imshow("RICE KRISPIES - Good Matches & Object Detection", img_matches );
+            cv::waitKey(1000);
+            rk_count++;
+
+        }
         
         // Use: boxes.templates
         //cv::imshow("view", img);
@@ -189,6 +229,6 @@ launch: gazebo, acml, contest2, rviz (not needed)
 todo:
 
 figure out how to pop out the image we want, how to "select" template
-add a filter/threshold to the blank one
+
 
 */
