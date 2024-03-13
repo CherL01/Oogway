@@ -10,7 +10,7 @@ int main()
     vector<float> v4 = {3, 0, 50};
 
     vector<vector<float>> test_graph = {v0, v2, v1, v4, v3};
-    vector<vector<double>> sorted_graph = sortGraph(test_graph);
+    vector<vector<float>> sorted_graph = sortGraph(test_graph);
     int start_node = 0;
 
     vector<int> min_path = travllingSalesmanProblem(sorted_graph, start_node);

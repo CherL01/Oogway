@@ -6,10 +6,10 @@ using namespace std;
 
 // cost function: Euclidean Distance
 
-double euclideanDist(vector<float> object1, vector<float> object2) {
-    double x = object1[0] - object2[0];
-    double y = object1[1] - object2[1];
-    double dist;
+float euclideanDist(vector<float> object1, vector<float> object2) {
+    float x = object1[0] - object2[0];
+    float y = object1[1] - object2[1];
+    float dist;
     dist = pow(x, 2) + pow(y, 2);
     dist = sqrt(dist);
     return dist;
@@ -17,7 +17,7 @@ double euclideanDist(vector<float> object1, vector<float> object2) {
 
 // path solver: brute force
 
-vector<int> travllingSalesmanProblem(vector<vector<double>> graph, int s) {
+vector<int> travllingSalesmanProblem(vector<vector<float>> graph, int s) {
 
     // put all nodes other than start into a vector
     vector<int> vertex;
@@ -26,10 +26,10 @@ vector<int> travllingSalesmanProblem(vector<vector<double>> graph, int s) {
             vertex.push_back(i);
  
     // save minimum path
-    double min_path_cost = INT_MAX;
+    float min_path_cost = INT_MAX;
     vector<int> min_path = vertex;
     do {
-        double current_pathweight = 0;
+        float current_pathweight = 0;
  
         int k = s;
         for (int i = 0; i < vertex.size(); i++) {
@@ -61,12 +61,12 @@ vector<int> travllingSalesmanProblem(vector<vector<double>> graph, int s) {
 
 // sort euclidean distances into graph
 
-vector<vector<double>> sortGraph(vector<vector<float>> objects) {
+vector<vector<float>> sortGraph(vector<vector<float>> objects) {
     int objects_size = objects.size();
-    vector<vector<double>> graph;
+    vector<vector<float>> graph;
 
     for (int row = 0; row < objects_size; row++) {
-        vector<double> temp_row;
+        vector<float> temp_row;
         for (int col = 0; col < objects_size; col++) {
             temp_row.push_back(euclideanDist(objects[row], objects[col]));
         }
