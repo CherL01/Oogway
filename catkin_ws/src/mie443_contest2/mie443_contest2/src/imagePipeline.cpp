@@ -184,4 +184,11 @@ int ImagePipeline::getTemplateID(Boxes& boxes) {
 img -> the img we got from callback
 1. compare img with templates
 
+launch: gazebo, acml, contest2, rviz (not needed)
+
+todo:
+
+figure out how to pop out the image we want, how to "select" template
+add a filter/threshold to the blank one
+
 */
