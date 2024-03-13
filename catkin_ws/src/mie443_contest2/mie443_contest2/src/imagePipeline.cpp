@@ -32,7 +32,7 @@ const char* keys =
 ImagePipeline::ImagePipeline(ros::NodeHandle& n) {
     image_transport::ImageTransport it(n);
     sub = it.subscribe(IMAGE_TOPIC, 1, &ImagePipeline::imageCallback, this);
-    // isValid = false;
+    isValid = false;
 }
 
 void ImagePipeline::imageCallback(const sensor_msgs::ImageConstPtr& msg) {
@@ -41,6 +41,7 @@ void ImagePipeline::imageCallback(const sensor_msgs::ImageConstPtr& msg) {
             img.release();
         }
         img = (cv_bridge::toCvShare(msg, IMAGE_TYPE)->image).clone();
+        // imshow("test",img);
         isValid = true;
     } catch (cv_bridge::Exception& e) {
         std::cout << "ERROR: Could not convert from " << msg->encoding.c_str()
@@ -197,6 +198,7 @@ int ImagePipeline::getTemplateID(Boxes& boxes) {
         
         } else if (template_id==2) {
             imshow("RICE KRISPIES - Good Matches & Object Detection", img_matches );
+            // cv::imwrite("/home/hqi-oogway/Oogway/catkin_ws/src/mie443_contest2/mie443_contest2/boxes_database/RICE_KRISPIES.jpg",img_matches);
             cv::waitKey(1000);
             rk_count++;
 

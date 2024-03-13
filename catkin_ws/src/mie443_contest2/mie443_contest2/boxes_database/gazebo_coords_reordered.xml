@@ -1,17 +1,17 @@
 <?xml version="1.0"?>
 <opencv_storage>
 	<coordinate1>
-	-1.429 <!--x  -->
-	1.797  <!--y  -->
-	-0.606 <!--phi-->
-	</coordinate1>
-
-	<coordinate2>
 	-0.116
 	0.995
 	-0.009
+	</coordinate1>
+
+	<coordinate2>
+	-1.429 <!--x  -->
+	1.797  <!--y  -->
+	-0.606 <!--phi-->
 	</coordinate2>
-<!--Swapped coord 3 and 5-->
+<!--Swapped coord 1 and 2, 3 and 5-->
 	<coordinate3>
 	<!-- -0.108
 	-0.405
