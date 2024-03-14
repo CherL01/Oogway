@@ -1,4 +1,4 @@
-/*
+
 #include <boxes.h>
 #include <navigation.h>
 #include <robot_pose.h>
@@ -76,17 +76,15 @@ int main(int argc, char** argv) {
                   << boxes.coords[i][2] << std::endl;
     }
     
-
     // Initialize image objectand subscriber.
     ImagePipeline imagePipeline(n);
-    int final_output[6];    // stores template_id of each box in order
+    int final_output[5];    // stores template_id of each box in order
 
     // contest count down timer
     std::chrono::time_point<std::chrono::system_clock> start;
     start = std::chrono::system_clock::now();
     uint64_t secondsElapsed = 0;
     int box_count = 0;
-
 
     // Initialize second set of box coordinates to check for valid coordinates
     Boxes newBoxes;
@@ -162,11 +160,9 @@ int main(int argc, char** argv) {
                 << newBoxes.coords[i][2] << std::endl;
     }
     
-
-
     // Execute strategy.
     while(ros::ok() && secondsElapsed <= 300) {
-        break;
+        //break;
         ros::spinOnce();
         
         // Use: boxes.coords
@@ -176,7 +172,8 @@ int main(int argc, char** argv) {
             start_x = robotPose.x;
             start_y = robotPose.y;
             start_z = robotPose.phi;
-            Navigation::moveToGoal(start_x, start_y, start_z+ M_PI);
+            if (Navigation::moveToGoal(start_x, start_y, start_z+ M_PI))
+            {ros::spinOnce();}
         }
         
         z = newBoxes.coords[box_count][2];
@@ -186,14 +183,19 @@ int main(int argc, char** argv) {
         
         ROS_INFO("At: %f,%f,%f", robotPose.x, robotPose.y, robotPose.phi);
         ROS_INFO("GOING to: %f,%f,%f", x, y, z);
+        
+        // final_output[box_count] = imagePipeline.getTemplateID(boxes); // returns template_id integer (-1 for blank)
+        // secondsElapsed = std::chrono::duration_cast<std::chrono::seconds>(std::chrono::system_clock::now()-start).count();
+        
+        if (Navigation::moveToGoal(x, y, z))
+        {
+            ros::spinOnce();
+            final_output[box_count] = imagePipeline.getTemplateID(boxes); // returns template_id integer (-1 for blank)
+            secondsElapsed = std::chrono::duration_cast<std::chrono::seconds>(std::chrono::system_clock::now()-start).count();
+            box_count++;
+            
+        }
 
-        bool success = Navigation::moveToGoal(x,y,z);
-        
-        final_output[box_count] = imagePipeline.getTemplateID(boxes); // returns template_id integer (-1 for blank)
-        secondsElapsed = std::chrono::duration_cast<std::chrono::seconds>(std::chrono::system_clock::now()-start).count();
-        
-        if (success) box_count++;
-        
         if (box_count == 5) 
         {   
             Navigation::moveToGoal(start_x, start_y, start_z);
@@ -217,14 +219,13 @@ int main(int argc, char** argv) {
     std::cout<< "Final output 3: " << final_output[2] << std::endl;
     std::cout<< "Final output 4: " << final_output[3] << std::endl;
     std::cout<< "Final output 5: " << final_output[4] << std::endl;
-    std::cout<< "Final output 6: " << final_output[5] << std::endl;
 
     return 0;
 }
 
-*/
 
-///* ----Henry's ----
+
+/* ----Henry's ----
 
 #include <boxes.h>
 #include <navigation.h>
@@ -294,18 +295,8 @@ int main(int argc, char** argv) {
             final_output[box_count] = imagePipeline.getTemplateID(boxes); // returns template_id integer (-1 for blank)
             secondsElapsed = std::chrono::duration_cast<std::chrono::seconds>(std::chrono::system_clock::now()-start).count();
             box_count++;
-            // if (first) 
-            // {
-            //     box_count--;
-            //     first =!first;
-            //     }
             
         }
-            
-        
-        //final_output[box_count] = imagePipeline.getTemplateID(boxes); // returns template_id integer (-1 for blank)
-        //secondsElapsed = std::chrono::duration_cast<std::chrono::seconds>(std::chrono::system_clock::now()-start).count();
-        //if (success) box_count++;
 
         if (box_count == 5) 
         {   
@@ -331,4 +322,4 @@ int main(int argc, char** argv) {
     std::cout<< "Final output 5: " << final_output[4] << std::endl;
     return 0;
 }
-// if fails to find path, don't take images
+*/

@@ -73,7 +73,7 @@ int ImagePipeline::getTemplateID(Boxes& boxes) {
 
         //std::vector<DMatch> good_matches;
         std::vector<DMatch> chosen_matches;
-        int matches_threshold = 40;
+        int matches_threshold = 25;
 
         // Iterate 3 times through all the templates, initialize some variables
         for (int counter=0;counter<3;counter++) {
@@ -188,17 +188,19 @@ int ImagePipeline::getTemplateID(Boxes& boxes) {
         
         } else if (template_id==0) {
             imshow("RAISIN BRAN - Good Matches & Object Detection", img_matches );
+            cv::imwrite("/home/tuesday2023/Oogway/catkin_ws/src/mie443_contest2/mie443_contest2/boxes_database/RAISIN_BRAN.jpg",img_matches);
             cv::waitKey(1000);
             rb_count++;
         
         } else if (template_id==1) {
             imshow("CINNAMON TOAST - Good Matches & Object Detection", img_matches );
+            cv::imwrite("/home/tuesday2023/Oogway/catkin_ws/src/mie443_contest2/mie443_contest2/boxes_database/CINNAMON_TOAST.jpg",img_matches);
             cv::waitKey(1000);
             ct_count++;
         
         } else if (template_id==2) {
             imshow("RICE KRISPIES - Good Matches & Object Detection", img_matches );
-            // cv::imwrite("/home/hqi-oogway/Oogway/catkin_ws/src/mie443_contest2/mie443_contest2/boxes_database/RICE_KRISPIES.jpg",img_matches);
+            cv::imwrite("/home/tuesday2023/Oogway/catkin_ws/src/mie443_contest2/mie443_contest2/boxes_database/RICE_KRISPIES.jpg",img_matches);
             cv::waitKey(1000);
             rk_count++;
 
@@ -223,9 +225,6 @@ int ImagePipeline::getTemplateID(Boxes& boxes) {
 7. obj/scene transform using findHomography
 8. draw lines around it
 
-img -> the img we got from callback
-1. compare img with templates
-
 launch: gazebo, acml, contest2, rviz (not needed)
 
 todo:
@@ -234,5 +233,8 @@ figure out how to pop out the image we want, how to "select" template
 
 mie443 laptop amcl line
 roslaunch turtlebot_gazebo amcl_demo.launch map_file:=/home/tuesday2023/Oogway/catkin_ws/src/mie443_contest2/mie443_contest2/maps/map_1.yaml
+roslaunch turtlebot_gazebo amcl_demo.launch map_file:=/home/tuesday2023/Oogway/catkin_ws/src/mie443_contest2/mie443_contest2/maps/contest_2.yaml
+
+
 
 */
