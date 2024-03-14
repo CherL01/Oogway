@@ -240,6 +240,8 @@ mie443_contest2/CMakeFiles/contest2.dir/src/contest2.cpp.o: /home/tuesday2023/Oo
 mie443_contest2/CMakeFiles/contest2.dir/src/contest2.cpp.o: /home/tuesday2023/Oogway/catkin_ws/src/mie443_contest2/include/robot_pose.h
 mie443_contest2/CMakeFiles/contest2.dir/src/contest2.cpp.o: /home/tuesday2023/Oogway/catkin_ws/src/mie443_contest2/src/contest2.cpp
 mie443_contest2/CMakeFiles/contest2.dir/src/contest2.cpp.o: /home/tuesday2023/Oogway/catkin_ws/src/mie443_contest2/src/path_planning.cpp
+mie443_contest2/CMakeFiles/contest2.dir/src/contest2.cpp.o: /opt/ros/kinetic/include/actionlib_msgs/GoalID.h
+mie443_contest2/CMakeFiles/contest2.dir/src/contest2.cpp.o: /opt/ros/kinetic/include/actionlib_msgs/GoalStatus.h
 mie443_contest2/CMakeFiles/contest2.dir/src/contest2.cpp.o: /opt/ros/kinetic/include/cv_bridge/cv_bridge.h
 mie443_contest2/CMakeFiles/contest2.dir/src/contest2.cpp.o: /opt/ros/kinetic/include/geometry_msgs/Point.h
 mie443_contest2/CMakeFiles/contest2.dir/src/contest2.cpp.o: /opt/ros/kinetic/include/geometry_msgs/PointStamped.h
@@ -264,6 +266,17 @@ mie443_contest2/CMakeFiles/contest2.dir/src/contest2.cpp.o: /opt/ros/kinetic/inc
 mie443_contest2/CMakeFiles/contest2.dir/src/contest2.cpp.o: /opt/ros/kinetic/include/image_transport/single_subscriber_publisher.h
 mie443_contest2/CMakeFiles/contest2.dir/src/contest2.cpp.o: /opt/ros/kinetic/include/image_transport/subscriber.h
 mie443_contest2/CMakeFiles/contest2.dir/src/contest2.cpp.o: /opt/ros/kinetic/include/image_transport/transport_hints.h
+mie443_contest2/CMakeFiles/contest2.dir/src/contest2.cpp.o: /opt/ros/kinetic/include/move_base_msgs/MoveBaseAction.h
+mie443_contest2/CMakeFiles/contest2.dir/src/contest2.cpp.o: /opt/ros/kinetic/include/move_base_msgs/MoveBaseActionFeedback.h
+mie443_contest2/CMakeFiles/contest2.dir/src/contest2.cpp.o: /opt/ros/kinetic/include/move_base_msgs/MoveBaseActionGoal.h
+mie443_contest2/CMakeFiles/contest2.dir/src/contest2.cpp.o: /opt/ros/kinetic/include/move_base_msgs/MoveBaseActionResult.h
+mie443_contest2/CMakeFiles/contest2.dir/src/contest2.cpp.o: /opt/ros/kinetic/include/move_base_msgs/MoveBaseFeedback.h
+mie443_contest2/CMakeFiles/contest2.dir/src/contest2.cpp.o: /opt/ros/kinetic/include/move_base_msgs/MoveBaseGoal.h
+mie443_contest2/CMakeFiles/contest2.dir/src/contest2.cpp.o: /opt/ros/kinetic/include/move_base_msgs/MoveBaseResult.h
+mie443_contest2/CMakeFiles/contest2.dir/src/contest2.cpp.o: /opt/ros/kinetic/include/nav_msgs/GetPlan.h
+mie443_contest2/CMakeFiles/contest2.dir/src/contest2.cpp.o: /opt/ros/kinetic/include/nav_msgs/GetPlanRequest.h
+mie443_contest2/CMakeFiles/contest2.dir/src/contest2.cpp.o: /opt/ros/kinetic/include/nav_msgs/GetPlanResponse.h
+mie443_contest2/CMakeFiles/contest2.dir/src/contest2.cpp.o: /opt/ros/kinetic/include/nav_msgs/Path.h
 mie443_contest2/CMakeFiles/contest2.dir/src/contest2.cpp.o: /opt/ros/kinetic/include/opencv-3.3.1-dev/opencv/cv.h
 mie443_contest2/CMakeFiles/contest2.dir/src/contest2.cpp.o: /opt/ros/kinetic/include/opencv-3.3.1-dev/opencv/cxcore.h
 mie443_contest2/CMakeFiles/contest2.dir/src/contest2.cpp.o: /opt/ros/kinetic/include/opencv-3.3.1-dev/opencv2/calib3d.hpp
