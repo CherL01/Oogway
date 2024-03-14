@@ -50,6 +50,7 @@ int main(int argc, char** argv) {
 
         view_coords.push_back(temp_vec);
     }
+    std::cout << "VIEW COORDS SIZE:" << view_coords.size() << std::endl;
 
     // Execute strategy.
     while(ros::ok() && secondsElapsed <= 300) {
@@ -60,6 +61,7 @@ int main(int argc, char** argv) {
 
         // startup
         if (box_count == -1){
+            ROS_INFO("STARTUP");
             start_x = robotPose.x;
             start_y = robotPose.y;
             start_z = robotPose.phi;
@@ -68,10 +70,10 @@ int main(int argc, char** argv) {
             // calculate shortest path
             std::vector<float> temp_vec = {start_x, start_y, start_z};
             view_coords.push_back(temp_vec);
-            std::cout << "VIEW COORDS SIZE:" << view_coords.size() << std::endl;
             std::vector<vector<float>> sorted_graph = sortGraph(view_coords);
             int start_node = view_coords.size() - 1;
             std::vector<int> min_path = travellingSalesmanProblem(sorted_graph, start_node);
+            std::cout << "MIN PATH SIZE:" << min_path.size() << std::endl;
             box_count = 0;
         }
         
