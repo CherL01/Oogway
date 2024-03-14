@@ -10,8 +10,13 @@
 #include <move_base_msgs/MoveBaseAction.h>
 #include <tf/transform_datatypes.h>
 
+#include <iostream>
+#include <fstream>
+#include <string>
+using namespace std;
+
 float start_x, start_y, start_z, x,y,z; 
-float deltAngle=1, normDist=0.5; 
+float deltAngle=1, normDist=0.4;        // normDist changed from 0.5 to 0.4;
 
 float incAngle = 1, incNorm = 0.1;
 float angStart=1, angEnd=15;
@@ -55,6 +60,31 @@ bool getPlan(float xStart, float yStart, float phiStart, float xGoal, float yGoa
 }
 
 bool results;
+string getFinalOutput(int id);
+
+string getFinalOutput(int id) {
+
+    int rb_count=0, ct_count=0, rk_count=0;
+
+    if (rb_count>0 && id == 0) {
+        return "(REPEAT) RAISIN_BRAN";
+    } else if (ct_count>0 && id == 1) {
+        return "(REPEAT) CINNAMON_TOAST";
+    } else if (rk_count>0 && id == 2) {
+        return "(REPEAT) RICE_KRISPIES";
+    } else if (rb_count==0 && id == 0) {
+        return "RAISIN_BRAN";
+    } else if (ct_count==0 && id == 1) {
+        return "CINNAMON_TOAST";
+    } else if (rk_count==0 && id == 2) {
+        return "RICE_KRISPIES";
+    } else if (id == -1) {
+        return "BOX IS BLANK!";
+    } else {
+        return "unidentified...";
+    }
+
+}
 
 int main(int argc, char** argv) {
     // Setup ROS.
@@ -62,6 +92,9 @@ int main(int argc, char** argv) {
     ros::NodeHandle n;
     // Robot pose object + subscriber.
     RobotPose robotPose(0,0,0);
+    // Setup output text file
+    std::ofstream contest2_file("/home/tuesday2023/Oogway/catkin_ws/src/mie443_contest2/mie443_contest2/boxes_database/Contest_2_Submission.txt");
+    
 
     ros::Subscriber amclSub = n.subscribe("/amcl_pose", 1, &RobotPose::poseCallback, &robotPose);
     // Initialize box coordinates and templates
@@ -79,6 +112,7 @@ int main(int argc, char** argv) {
     // Initialize image objectand subscriber.
     ImagePipeline imagePipeline(n);
     int final_output[5];    // stores template_id of each box in order
+    array<string,5> template_names = {"N/A", "N/A", "N/A", "N/A", "N/A"};
 
     // contest count down timer
     std::chrono::time_point<std::chrono::system_clock> start;
@@ -134,7 +168,7 @@ int main(int argc, char** argv) {
             // increment delta angle
             else
             {
-                if (abs(deltAngle)%2==1) deltAngle = (abs(deltAngle)+incAngle)*(-1); //odd, positive deltangle
+                if (int(abs(deltAngle))%2==1) deltAngle = (abs(deltAngle)+incAngle)*(-1); //odd, positive deltangle
                 else deltAngle = (abs(deltAngle)+incAngle); //even, negative deltangle
             }
 
@@ -219,6 +253,18 @@ int main(int argc, char** argv) {
     std::cout<< "Final output 3: " << final_output[2] << std::endl;
     std::cout<< "Final output 4: " << final_output[3] << std::endl;
     std::cout<< "Final output 5: " << final_output[4] << std::endl;
+
+    for (int i=0;i<5;i++) {
+        template_names[i] = getFinalOutput(final_output[i]);
+    }
+
+    // std::ofstream contest2_file("/home/tuesday2023/Oogway/catkin_ws/src/mie443_contest2/mie443_contest2/boxes_database/Contest_2_Submission.txt");
+    contest2_file << "Names: Henry, Harry, Cherry, Alastair\n" << std::endl;
+    for (int i=0;i<5;i++) {
+        contest2_file << "Box "<< i+1 << ": " << template_names[i] << "\n" << std::endl;
+    }
+
+    contest2_file.close();
 
     return 0;
 }
