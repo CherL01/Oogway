@@ -16,7 +16,7 @@
 using namespace std;
 
 float start_x, start_y, start_z, x,y,z; 
-float deltAngle=1, normDist=0.4;        // normDist changed from 0.5 to 0.4;
+float deltAngle=1, normDist=0.42;        // normDist changed from 0.5 to 0.42;
 
 float incAngle = 1, incNorm = 0.1;
 float angStart=1, angEnd=15;
@@ -61,22 +61,25 @@ bool getPlan(float xStart, float yStart, float phiStart, float xGoal, float yGoa
 
 bool results;
 string getFinalOutput(int id);
+int rb_repeat=0, ct_repeat=0, rk_repeat=0;
 
+// Converts template_id values into chosen template
 string getFinalOutput(int id) {
 
-    int rb_count=0, ct_count=0, rk_count=0;
-
-    if (rb_count>0 && id == 0) {
+    if (rb_repeat>0 && id == 0) {
         return "(REPEAT) RAISIN_BRAN";
-    } else if (ct_count>0 && id == 1) {
+    } else if (ct_repeat>0 && id == 1) {
         return "(REPEAT) CINNAMON_TOAST";
-    } else if (rk_count>0 && id == 2) {
+    } else if (rk_repeat>0 && id == 2) {
         return "(REPEAT) RICE_KRISPIES";
-    } else if (rb_count==0 && id == 0) {
+    } else if (rb_repeat==0 && id == 0) {
+        rb_repeat++;
         return "RAISIN_BRAN";
-    } else if (ct_count==0 && id == 1) {
+    } else if (ct_repeat==0 && id == 1) {
+        ct_repeat++;
         return "CINNAMON_TOAST";
-    } else if (rk_count==0 && id == 2) {
+    } else if (rk_repeat==0 && id == 2) {
+        rk_repeat++;
         return "RICE_KRISPIES";
     } else if (id == -1) {
         return "BOX IS BLANK!";
@@ -256,6 +259,15 @@ int main(int argc, char** argv) {
 
     for (int i=0;i<5;i++) {
         template_names[i] = getFinalOutput(final_output[i]);
+        
+        // Checks for repeats by keeping count
+        if (final_output[i]==0) {
+            rb_repeat++;
+        } else if (final_output[i]==1) {
+            ct_repeat++;
+        } else if (final_output[i]==2) {
+            rk_repeat++;
+        }
     }
 
     // std::ofstream contest2_file("/home/tuesday2023/Oogway/catkin_ws/src/mie443_contest2/mie443_contest2/boxes_database/Contest_2_Submission.txt");
@@ -264,7 +276,7 @@ int main(int argc, char** argv) {
         contest2_file << "Box "<< i+1 << ": " << template_names[i] << "\n" << std::endl;
     }
 
-    contest2_file.close();
+    // contest2_file.close();
 
     return 0;
 }

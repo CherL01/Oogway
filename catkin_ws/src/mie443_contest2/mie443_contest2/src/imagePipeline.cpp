@@ -15,10 +15,8 @@ using namespace cv::xfeatures2d;
 using std::cout;
 using std::endl;
 
-// Check for cereal box repeats
-int rb_count=0;
-int ct_count=0;
-int rk_count=0;
+// Keep track of repeats
+int rb_count=0, ct_count=0, rk_count=0;
 
 //input1: box -> template, input2: boxinscene -> img
 const char* keys =
