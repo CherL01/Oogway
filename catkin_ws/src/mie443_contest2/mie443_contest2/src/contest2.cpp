@@ -281,7 +281,7 @@ int main(int argc, char** argv) {
     return 0;
 }
 
-
+// roslaunch turtlebot_navigation amcl_demo.launch map_file:=/home/tuesday2023/Oogway/catkin_ws/src/mie443_contest2/mie443_contest2/maps/contest_2.yaml
 
 /* ----Henry's ----
 
