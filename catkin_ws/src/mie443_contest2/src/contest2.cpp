@@ -304,8 +304,8 @@ int main(int argc, char** argv) {
         // x = newBoxes.coords[box_count][0];
         // y = newBoxes.coords[box_count][1];
 
-        ROS_INFO("BOX COUNT: %f", box_count);
-        ROS_INFO("MIN PATH [BOX COUNT]: %f", min_path[box_count]);
+        // ROS_INFO("BOX COUNT: %f", box_count);
+        // ROS_INFO("MIN PATH [BOX COUNT]: %f", min_path[box_count]);
 
         x = newBoxes.coords[min_path[box_count]][0];
         y = newBoxes.coords[min_path[box_count]][1];
