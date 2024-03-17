@@ -1,8 +1,0 @@
-prefix=/home/tuesday2023/Oogway/catkin_ws/install
-
-Name: mie443_contest1
-Description: Description of mie443_contest1
-Version: 0.0.0
-Cflags: 
-Libs: -L${prefix}/lib 
-Requires: 
