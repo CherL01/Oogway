@@ -1,6 +1,6 @@
-devel/
+catkin_ws/devel/
 logs/
-build/
+catkin_ws/build/
 bin/
 lib/
 msg_gen/
