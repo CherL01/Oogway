@@ -175,6 +175,10 @@ int main(int argc, char** argv) {
             start_y = robotPose.y;
             start_z = robotPose.phi;
             Navigation::moveToGoal(start_x, start_y, start_z+ M_PI);
+            start_x = robotPose.x;
+            start_y = robotPose.y;
+            start_z = robotPose.phi-M_PI;
+
         }
         
         z = newBoxes.coords[box_count][2];
@@ -185,8 +189,10 @@ int main(int argc, char** argv) {
         ROS_INFO("At: %f,%f,%f", robotPose.x, robotPose.y, robotPose.phi);
         ROS_INFO("GOING to: %f,%f,%f", x, y, z);
 
-        bool success = Navigation::moveToGoal(x,y,z);
-        if (success) box_count++;
+        if (Navigation::moveToGoal(x,y,z))
+        {
+            if (success) box_count++;
+        }
 
         
         
