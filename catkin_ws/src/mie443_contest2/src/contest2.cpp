@@ -9,12 +9,25 @@
 #include <move_base_msgs/MoveBaseAction.h>
 #include <tf/transform_datatypes.h>
 
+#include "path_planning.cpp"
+
+#include <iostream>
+#include <fstream>
+#include <string>
+using namespace std;
+
 float start_x, start_y, start_z, x,y,z; 
-float deltAngle=1, normDist=0.5; 
+
+bool first = true; // check if first iteration or not
+
+//std::string outputPath = "/home/tuesday2023/Oogway/catkin_ws/src/mie443_contest2/mie443_contest2/boxes_database/Contest_2_Submission.txt";
+std::string outputPath = "/home/harryp/catkin_ws/src/mie443_contest2/boxes_database";
 
 float incAngle = 1, incNorm = 0.1;
-float angStart=1, angEnd=15;
-float normStart=0.5, normEnd=0.8;
+float angStart=1, angEnd=45;
+float normStart=0.48, normEnd=0.8, normSide=0.7;
+float checkRight=M_PI/6, checkLeft=-M_PI/6;
+float deltAngle=angStart, normDist=normStart; 
 
 bool getPlan(float xStart, float yStart, float phiStart, float xGoal, float yGoal, float phiGoal){
 	// Set up and wait for actionClient.
@@ -54,6 +67,35 @@ bool getPlan(float xStart, float yStart, float phiStart, float xGoal, float yGoa
 }
 
 bool results;
+string getFinalOutput(int id);
+int rb_repeat=0, ct_repeat=0, rk_repeat=0;
+
+// Converts template_id values into chosen template
+string getFinalOutput(int id) {
+
+    if (rb_repeat>0 && id == 0) {
+        return "(REPEAT) RAISIN_BRAN";
+    } else if (ct_repeat>0 && id == 1) {
+        return "(REPEAT) CINNAMON_TOAST";
+    } else if (rk_repeat>0 && id == 2) {
+        return "(REPEAT) RICE_KRISPIES";
+    } else if (rb_repeat==0 && id == 0) {
+        rb_repeat++;
+        return "RAISIN_BRAN";
+    } else if (ct_repeat==0 && id == 1) {
+        ct_repeat++;
+        return "CINNAMON_TOAST";
+    } else if (rk_repeat==0 && id == 2) {
+        rk_repeat++;
+        return "RICE_KRISPIES";
+    } else if (id == -1) {
+        return "BOX IS BLANK!";
+    } else {
+        return "unidentified...";
+    }
+
+}
+
 
 int main(int argc, char** argv) {
     // Setup ROS.
@@ -61,8 +103,13 @@ int main(int argc, char** argv) {
     ros::NodeHandle n;
     // Robot pose object + subscriber.
     RobotPose robotPose(0,0,0);
-
     ros::Subscriber amclSub = n.subscribe("/amcl_pose", 1, &RobotPose::poseCallback, &robotPose);
+    ros::spinOnce();
+
+    // Setup output text file
+    std::ofstream contest2_file(outputPath);
+
+    
     // Initialize box coordinates and templates
     Boxes boxes; 
     if(!boxes.load_coords() || !boxes.load_templates()) {
@@ -78,6 +125,11 @@ int main(int argc, char** argv) {
 
     // Initialize image objectand subscriber.
     ImagePipeline imagePipeline(n);
+    int final_output[5];    // stores template_id of each box in order
+    array<string,5> template_names = {"N/A", "N/A", "N/A", "N/A", "N/A"};
+
+    // Initialize path vector
+    std::vector<int> min_path;
 
     // contest count down timer
     std::chrono::time_point<std::chrono::system_clock> start;
@@ -105,6 +157,7 @@ int main(int argc, char** argv) {
         while (!getPlan(robotPose.x, robotPose.y, robotPose.phi, x,y,z))
         //while (true)
         {
+            ros::spinOnce();
             
             z = newBoxes.coords[i][2]+deltAngle/180*M_PI - M_PI;
             x = newBoxes.coords[i][0] + normDist*std::cos(newBoxes.coords[i][2]+deltAngle/180*M_PI);
@@ -114,7 +167,7 @@ int main(int argc, char** argv) {
             {
                 ROS_INFO("Valid Path! Updating coordinates to %f, %f, %f...", x,y,z);
                 ROS_INFO("Delta angle is: %f and normal distance is: %f", deltAngle, normDist);
-                break;
+                //break;
             }
             else 
             {
@@ -134,7 +187,7 @@ int main(int argc, char** argv) {
             // increment delta angle
             else
             {
-                if (abs(deltAngle)%2==1) deltAngle = (abs(deltAngle)+incAngle)*(-1); //odd, positive deltangle
+                if (int(abs(deltAngle))%2==1) deltAngle = (abs(deltAngle)+incAngle)*(-1); //odd, positive deltangle
                 else deltAngle = (abs(deltAngle)+incAngle); //even, negative deltangle
             }
 
@@ -159,6 +212,7 @@ int main(int argc, char** argv) {
         std::cout << i << " x: " << newBoxes.coords[i][0] << " y: " << newBoxes.coords[i][1] << " z: " 
                 << newBoxes.coords[i][2] << std::endl;
     }
+
     
 
 
@@ -170,34 +224,46 @@ int main(int argc, char** argv) {
         // Use: boxes.coords
         // Use: robotPose.x, robotPose.y, robotPose.phi
 
-        if (box_count == 0){
+        if (first){
+            first = false;
+            ROS_INFO("First Iteration!");
             start_x = robotPose.x;
             start_y = robotPose.y;
             start_z = robotPose.phi;
+            ROS_INFO("Starting Coordinates: (%f, %f, %f)", start_x, start_y, start_z);
+
+            ROS_INFO("Localizing...");
+            ROS_INFO("At: %f,%f,%f", robotPose.x, robotPose.y, robotPose.phi);
             Navigation::moveToGoal(start_x, start_y, start_z+ M_PI);
+
+            ros::spinOnce();
+
             start_x = robotPose.x;
             start_y = robotPose.y;
-            start_z = robotPose.phi-M_PI;
+            start_z = robotPose.phi- M_PI;
+            
+
+
+            ROS_INFO("Finished Localizing");
+            ROS_INFO("Actual Starting Coordinates: (%f, %f, %f)", start_x, start_y, start_z);
+
+            //Calculate shortest path
+            ROS_INFO("Calculating Shortest path");
+            std::vector<float> temp_vec = {start_x, start_y, start_z};
+            std::vector<std::vector<float>> view_coords = newBoxes.coords;
+            view_coords.push_back(temp_vec);
+            std::vector<vector<float>> sorted_graph = sortGraph(view_coords);
+            int start_node = view_coords.size() - 1;
+            min_path = travellingSalesmanProblem(sorted_graph, start_node);
+            std::cout << "MIN PATH SIZE:" << min_path.size() << std::endl;
 
         }
-        
-        z = newBoxes.coords[box_count][2];
-        x = newBoxes.coords[box_count][0];
-        y = newBoxes.coords[box_count][1];
-        
-        
-        ROS_INFO("At: %f,%f,%f", robotPose.x, robotPose.y, robotPose.phi);
-        ROS_INFO("GOING to: %f,%f,%f", x, y, z);
 
-        if (Navigation::moveToGoal(x,y,z))
+        else if (box_count == 5)
         {
-            if (success) box_count++;
-        }
+            ROS_INFO("At: %f,%f,%f", robotPose.x, robotPose.y, robotPose.phi);
+            ROS_INFO("GOING to: %f,%f,%f", start_x, start_y, start_z);
 
-        
-        
-        if (box_count == 5) 
-        {   
             Navigation::moveToGoal(start_x, start_y, start_z);
             secondsElapsed = std::chrono::duration_cast<std::chrono::seconds>(std::chrono::system_clock::now()-start).count();
 
@@ -205,7 +271,66 @@ int main(int argc, char** argv) {
             std::cout << secondsElapsed << std::endl;
             break;
         }
-        //imagePipeline.getTemplateID(boxes);*/
+
+        else
+        {
+        
+            // replace box_count with min_path[box_count] from here on
+
+            // If available, check and create waypoint at right side of box
+            normDist = normSide;
+            deltAngle = M_PI/2;
+            z = boxes.coords[min_path[box_count]][2];
+            x = boxes.coords[min_path[box_count]][0] + normDist*std::cos(boxes.coords[min_path[box_count]][2]+deltAngle);
+            y = boxes.coords[min_path[box_count]][1] + normDist*std::sin(boxes.coords[min_path[box_count]][2]+deltAngle);
+
+            ROS_INFO("Checking right side of box...");
+            if (getPlan(robotPose.x, robotPose.y, robotPose.phi, x, y, z))
+            {
+                ROS_INFO("Right side available!");
+                Navigation::moveToGoal(x,y,z);
+                ROS_INFO("Reached right side");
+            }
+            
+            else // If right side not available, check left side of box
+            {
+                ROS_INFO("Right side not available, checking left side of box...");
+                deltAngle = -M_PI/2;
+                z = boxes.coords[min_path[box_count]][2];
+                x = boxes.coords[min_path[box_count]][0] + normDist*std::cos(boxes.coords[min_path[box_count]][2]+deltAngle);
+                y = boxes.coords[min_path[box_count]][1] + normDist*std::sin(boxes.coords[min_path[box_count]][2]+deltAngle);
+                if (getPlan(robotPose.x, robotPose.y, robotPose.phi, x, y, z))
+                {
+                    ROS_INFO("Left side available!");
+                    Navigation::moveToGoal(x,y,z);
+                    ROS_INFO("Reached left side");
+                }
+                else
+                {
+                    ROS_INFO("Left side not available either");
+                }
+            }
+            ros::spinOnce();
+            ROS_INFO("Heading to normal of box...");
+
+            z = newBoxes.coords[min_path[box_count]][2];
+            x = newBoxes.coords[min_path[box_count]][0];
+            y = newBoxes.coords[min_path[box_count]][1];
+
+            ROS_INFO("At: %f,%f,%f", robotPose.x, robotPose.y, robotPose.phi);
+            ROS_INFO("GOING to: %f,%f,%f", x, y, z);
+
+            if (Navigation::moveToGoal(x,y,z))
+            {
+                // image pipeline
+                ros::spinOnce();
+                final_output[min_path[box_count]] = imagePipeline.getTemplateID(boxes);
+
+                box_count++;
+
+            }
+        }
+        
 
         secondsElapsed = std::chrono::duration_cast<std::chrono::seconds>(std::chrono::system_clock::now()-start).count();
         std::cout << "Time Elapsed:" << std:: endl;
@@ -213,5 +338,39 @@ int main(int argc, char** argv) {
         ros::Duration(0.01).sleep();
         
     }
+    // make text file of final output (coords and template_id
+    std::cout<< "Final output 1: " << final_output[0] << std::endl;
+    std::cout<< "Final output 2: " << final_output[1] << std::endl;
+    std::cout<< "Final output 3: " << final_output[2] << std::endl;
+    std::cout<< "Final output 4: " << final_output[3] << std::endl;
+    std::cout<< "Final output 5: " << final_output[4] << std::endl;
+
+    for (int i=0;i<5;i++) {
+        template_names[i] = getFinalOutput(final_output[i]);
+        
+        // Checks for repeats by keeping count
+        if (final_output[i]==0) {
+            rb_repeat++;
+        } else if (final_output[i]==1) {
+            ct_repeat++;
+        } else if (final_output[i]==2) {
+            rk_repeat++;
+        }
+    }
+
+    // std::ofstream contest2_file("/home/tuesday2023/Oogway/catkin_ws/src/mie443_contest2/mie443_contest2/boxes_database/Contest_2_Submission.txt");
+    contest2_file << "Names: Henry, Harry, Cherry, Alastair\n" << std::endl;
+    for (int i=0;i<5;i++) {
+        contest2_file << "Box "<< i+1 << ": " << template_names[i] << "\n" << std::endl;
+    }
+
+    contest2_file.close();
+
+
     return 0;
 }
+
+// Edit costmap parameters
+
+//roscd turtlebot_navigation/param
+//sudo gedit costmap_common_params.yaml
