@@ -358,7 +358,6 @@ int main(int argc, char** argv) {
         }
     }
 
-    // std::ofstream contest2_file("/home/tuesday2023/Oogway/catkin_ws/src/mie443_contest2/mie443_contest2/boxes_database/Contest_2_Submission.txt");
     contest2_file << "Names: Henry, Harry, Cherry, Alastair\n" << std::endl;
     for (int i=0;i<5;i++) {
         contest2_file << "Box "<< i+1 << "Tag: " << template_names[i] << std::endl;
