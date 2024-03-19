@@ -1,0 +1,17 @@
+Names: Henry, Harry, Cherry, Alastair
+
+Box 1Tag: CINNAMON_TOAST
+Coordinates (x,y, phi): (-0.0351, -1.22, 0.441) 
+
+Box 2Tag: RAISIN_BRAN
+Coordinates (x,y, phi): (-0.836, -3.75, -1.384) 
+
+Box 3Tag: unidentified...
+Coordinates (x,y, phi): (-2.57, -4.04, 2.59) 
+
+Box 4Tag: unidentified...
+Coordinates (x,y, phi): (-2.86, -1.96, -1.29) 
+
+Box 5Tag: unidentified...
+Coordinates (x,y, phi): (-2.52, -2.09, -2.741) 
+

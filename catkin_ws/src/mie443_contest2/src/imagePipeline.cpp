@@ -71,7 +71,7 @@ int ImagePipeline::getTemplateID(Boxes& boxes) {
 
         //std::vector<DMatch> good_matches;
         std::vector<DMatch> chosen_matches;
-        int matches_threshold = 25;
+        int matches_threshold = 20;
 
         // Iterate 3 times through all the templates, initialize some variables
         for (int counter=0;counter<3;counter++) {
@@ -181,31 +181,37 @@ int ImagePipeline::getTemplateID(Boxes& boxes) {
 
         if (rb_count>0 && template_id==0) {
             imshow("(REPEAT) RAISIN BRAN - Good Matches & Object Detection", img_matches );
+            cv::imwrite("/home/tuesday2023/catkin_ws_cherry/REPEAT_RAINSIN_BRAN.jpg",img_matches);
+            
             cv::waitKey(1000);
         
         } else if (ct_count>0 && template_id==1) {
             imshow("(REPEAT) CINNAMON TOAST - Good Matches & Object Detection", img_matches );
+            cv::imwrite("/home/tuesday2023/catkin_ws_cherry/REPEAT_CINNAMON_TOAST.jpg",img_matches);
+            
             cv::waitKey(1000);
         
         } else if (rk_count>0 && template_id==2) {
             imshow("(REPEAT) RICE KRISPIES - Good Matches & Object Detection", img_matches );
+            cv::imwrite("/home/tuesday2023/catkin_ws_cherry/REPEAT_RICE_KRISPIES.jpg",img_matches);
+            
             cv::waitKey(1000);
         
         } else if (template_id==0) {
             imshow("RAISIN BRAN - Good Matches & Object Detection", img_matches );
-            //cv::imwrite("/home/tuesday2023/Oogway/catkin_ws/src/mie443_contest2/mie443_contest2/boxes_database/RAISIN_BRAN.jpg",img_matches);
+            cv::imwrite("/home/tuesday2023/catkin_ws_cherry/RAISIN_BRAN.jpg",img_matches);
             cv::waitKey(1000);
             rb_count++;
         
         } else if (template_id==1) {
             imshow("CINNAMON TOAST - Good Matches & Object Detection", img_matches );
-            //cv::imwrite("/home/tuesday2023/Oogway/catkin_ws/src/mie443_contest2/mie443_contest2/boxes_database/CINNAMON_TOAST.jpg",img_matches);
+            cv::imwrite("/home/tuesday2023/catkin_ws_cherry/CINNAMON_TOAST.jpg",img_matches);
             cv::waitKey(1000);
             ct_count++;
         
         } else if (template_id==2) {
             imshow("RICE KRISPIES - Good Matches & Object Detection", img_matches );
-            //cv::imwrite("/home/tuesday2023/Oogway/catkin_ws/src/mie443_contest2/mie443_contest2/boxes_database/RICE_KRISPIES.jpg",img_matches);
+            cv::imwrite("/home/tuesday2023/catkin_ws_cherry/RICE_KRISPIES.jpg",img_matches);
             cv::waitKey(1000);
             rk_count++;
 

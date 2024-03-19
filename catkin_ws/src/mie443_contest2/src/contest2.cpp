@@ -20,8 +20,10 @@ float start_x, start_y, start_z, x,y,z;
 
 bool first = true; // check if first iteration or not
 
-//std::string outputPath = "/home/tuesday2023/Oogway/catkin_ws/src/mie443_contest2/boxes_database/Contest_2_Submission.txt";
-std::string outputPath = "/home/harryp/catkin_ws/src/mie443_contest2/boxes_database/Contest2.txt";
+std::string outputPath = "/home/tuesday2023/Oogway/catkin_ws/src/mie443_contest2/boxes_database/Contest_2_Submission.txt";
+std::string outputPath2 = "/home/tuesday2023/catkin_ws_cherry/sample_code.txt";
+
+//std::string outputPath = "/home/harryp/catkin_ws/src/mie443_contest2/boxes_database/Contest2.txt";
 
 float incAngle = 1, incNorm = 0.1;
 float angStart=1, angEnd=45;
@@ -108,6 +110,7 @@ int main(int argc, char** argv) {
 
     // Setup output text file
     std::ofstream contest2_file(outputPath);
+    std::ofstream contest2_file2(outputPath2);
 
     
     // Initialize box coordinates and templates
@@ -370,6 +373,12 @@ int main(int argc, char** argv) {
     for (int i=0;i<5;i++) {
         contest2_file << "Box "<< i+1 << "Tag: " << template_names[i] << std::endl;
         contest2_file << "Coordinates (x,y, phi): (" << boxes.coords[i][0] << ", " << boxes.coords[i][1] << ", " << boxes.coords[i][2] << ") \n" << std::endl;
+    }
+
+    contest2_file2 << "Contest 2\n" << std::endl;
+    for (int i=0;i<5;i++) {
+        contest2_file2 << "Box "<< i+1 << "Tag: " << template_names[i] << std::endl;
+        contest2_file2 << "Coordinates (x,y, phi): (" << boxes.coords[i][0] << ", " << boxes.coords[i][1] << ", " << boxes.coords[i][2] << ") \n" << std::endl;
     }
 
     //contest2_file.close();
