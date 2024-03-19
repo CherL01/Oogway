@@ -20,8 +20,8 @@ float start_x, start_y, start_z, x,y,z;
 
 bool first = true; // check if first iteration or not
 
-std::string outputPath = "/home/tuesday2023/Oogway/catkin_ws/src/mie443_contest2/boxes_database/Contest_2_Submission_0318.txt";
-//std::string outputPath = "/home/harryp/catkin_ws/src/mie443_contest2/boxes_database";
+//std::string outputPath = "/home/tuesday2023/Oogway/catkin_ws/src/mie443_contest2/boxes_database/Contest_2_Submission.txt";
+std::string outputPath = "/home/harryp/catkin_ws/src/mie443_contest2/boxes_database/Contest2.txt";
 
 float incAngle = 1, incNorm = 0.1;
 float angStart=1, angEnd=45;
@@ -220,11 +220,19 @@ int main(int argc, char** argv) {
     while(ros::ok() && secondsElapsed <= 300) {
         
         ros::spinOnce();
+        ros::Duration(0.1).sleep();
+
         
         // Use: boxes.coords
         // Use: robotPose.x, robotPose.y, robotPose.phi
 
         if (first){
+            ros::spinOnce();
+            ros::Duration(0.1).sleep();
+            ros::spinOnce();
+            ros::Duration(0.1).sleep();
+            ros::spinOnce();
+            ros::Duration(0.1).sleep();
             first = false;
             ROS_INFO("First Iteration!");
             start_x = robotPose.x;
