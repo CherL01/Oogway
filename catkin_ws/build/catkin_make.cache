@@ -1,2 +1,0 @@
-mie443_contest1:mie443_contest2/mie443_contest2
--DCATKIN_DEVEL_PREFIX=/home/hqi-oogway/Oogway/catkin_ws/devel -DCMAKE_INSTALL_PREFIX=/home/hqi-oogway/Oogway/catkin_ws/install -G Unix Makefiles
