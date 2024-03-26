@@ -2,11 +2,18 @@
 #include <ros/package.h>
 #include <imageTransporter.hpp>
 #include <chrono>
+#include "bumper.h"
 
 using namespace std;
 
 geometry_msgs::Twist follow_cmd;
 int world_state;
+
+uint8_t bumper[3] = {kobuki_msgs::BumperEvent::RELEASED, kobuki_msgs::BumperEvent::RELEASED, kobuki_msgs::BumperEvent::RELEASED};
+
+uint8_t leftState = bumper[kobuki_msgs::BumperEvent::LEFT];
+uint8_t rightState = bumper[kobuki_msgs::BumperEvent::RIGHT];
+uint8_t centerState = bumper[kobuki_msgs::BumperEvent::CENTER];
 
 void followerCB(const geometry_msgs::Twist msg){
     follow_cmd = msg;
@@ -14,6 +21,12 @@ void followerCB(const geometry_msgs::Twist msg){
 
 void bumperCB(const geometry_msgs::Twist msg){
     //Fill with code
+	bumper[msg->bumper] = msg->state;
+    leftState = bumper[0];
+    centerState = bumper[1];
+    rightState = bumper[2];
+    ROS_INFO("Left Bumper: %i, Center Bumper: %i, Right Bumper: %i", leftState, centerState, rightState);
+
 }
 
 //-------------------------------------------------------------
@@ -58,6 +71,8 @@ int main(int argc, char **argv)
 	while(ros::ok() && secondsElapsed <= 480){		
 		ros::spinOnce();
 
+		// left and right bumpers activated, and cliff sensors -> world state 4
+		
 		if(world_state == 0){
 			//fill with your code
 			//vel_pub.publish(vel);
@@ -68,6 +83,11 @@ int main(int argc, char **argv)
 			...
 			...
 			*/
+		}else if (world_state == 4){
+			// left and right bumpers activated
+			// positively excited
+			// play some sounds
+
 		}
 		secondsElapsed = std::chrono::duration_cast<std::chrono::seconds>(std::chrono::system_clock::now()-start).count();
 		loop_rate.sleep();
