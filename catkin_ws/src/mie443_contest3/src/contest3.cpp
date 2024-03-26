@@ -10,22 +10,35 @@ geometry_msgs::Twist follow_cmd;
 int world_state;
 
 uint8_t bumper[3] = {kobuki_msgs::BumperEvent::RELEASED, kobuki_msgs::BumperEvent::RELEASED, kobuki_msgs::BumperEvent::RELEASED};
+uint8_t bumperLeftState = bumper[kobuki_msgs::BumperEvent::LEFT];
+uint8_t bumperRightState = bumper[kobuki_msgs::BumperEvent::RIGHT];
+uint8_t bumperCenterState = bumper[kobuki_msgs::BumperEvent::CENTER];
 
-uint8_t leftState = bumper[kobuki_msgs::BumperEvent::LEFT];
-uint8_t rightState = bumper[kobuki_msgs::BumperEvent::RIGHT];
-uint8_t centerState = bumper[kobuki_msgs::BumperEvent::CENTER];
+uint8_t cliff[3] = {kobuki_msgs::CliffEvent::RELEASED, kobuki_msgs::CliffEvent::RELEASED, kobuki_msgs::CliffEvent::RELEASED};
+uint8_t cliffLeftState = cliff[kobuki_msgs::CliffEvent::LEFT];
+uint8_t cliffRightState = cliff[kobuki_msgs::CliffEvent::RIGHT];
+uint8_t cliffCenterState = cliff[kobuki_msgs::CliffEvent::CENTER];
 
 void followerCB(const geometry_msgs::Twist msg){
     follow_cmd = msg;
 }
 
-void bumperCB(const geometry_msgs::Twist msg){
+void bumperCB(const kobuki_msgs::BumperEvent::ConstPtr& msg){
     //Fill with code
 	bumper[msg->bumper] = msg->state;
-    leftState = bumper[0];
-    centerState = bumper[1];
-    rightState = bumper[2];
-    ROS_INFO("Left Bumper: %i, Center Bumper: %i, Right Bumper: %i", leftState, centerState, rightState);
+    bumperLeftState = bumper[0];
+    bumperCenterState = bumper[1];
+    bumperRightState = bumper[2];
+    ROS_INFO("Left Bumper: %i, Center Bumper: %i, Right Bumper: %i", bumperLeftState, bumperCenterState, bumperRightState);
+
+}
+
+void cliffCB(const kobuki_msgs::CliffEvent::ConstPtr& msg) {
+	cliff[msg->cliff] = msg->state;
+	cliffLeftState = cliff[0];
+	cliffCenterState = cliff[1];
+	cliffRightState = cliff[2];
+	ROS_INFO("L Cliff Sensor: %i, C Cliff Sensor: %i, R Cliff Sensor: %i", cliffLeftState, cliffCenterState, cliffRightState);
 
 }
 
@@ -45,6 +58,7 @@ int main(int argc, char **argv)
 	//subscribers
 	ros::Subscriber follower = nh.subscribe("follower_velocity_smoother/smooth_cmd_vel", 10, &followerCB);
 	ros::Subscriber bumper = nh.subscribe("mobile_base/events/bumper", 10, &bumperCB);
+	ros::Subscriber cliff = nh.subscribe("mobile_base/events/cliff", 10, &cliffCB);
 
     // contest count down timer
 	ros::Rate loop_rate(10);
@@ -72,7 +86,8 @@ int main(int argc, char **argv)
 		ros::spinOnce();
 
 		// left and right bumpers activated, and cliff sensors -> world state 4
-		
+		// need to subscribe to cliff topic
+
 		if(world_state == 0){
 			//fill with your code
 			//vel_pub.publish(vel);

@@ -3,6 +3,6 @@
 
 #include "globals.h"
 
-void bumperCallback(const kobuki_msgs::BumperEvent::ConstPtr& msg);
+void bumperCB(const kobuki_msgs::BumperEvent::ConstPtr& msg);
 
 #endif
