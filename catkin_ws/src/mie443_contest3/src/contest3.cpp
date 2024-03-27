@@ -1,5 +1,7 @@
 #include <header.h>
 #include <ros/package.h>
+#include <geometry_msgs/Twist.h>
+#include <kobuki_msgs/BumperEvent.h>
 #include <imageTransporter.hpp>
 #include <chrono>
 
