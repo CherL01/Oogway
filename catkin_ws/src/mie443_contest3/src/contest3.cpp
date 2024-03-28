@@ -15,7 +15,7 @@ int counter = 0;
 
 uint8_t bumperState[3] = {kobuki_msgs::BumperEvent::RELEASED, kobuki_msgs::BumperEvent::RELEASED, kobuki_msgs::BumperEvent::RELEASED};
 uint8_t cliffState[3] = {kobuki_msgs::CliffEvent::FLOOR, kobuki_msgs::CliffEvent::FLOOR, kobuki_msgs::CliffEvent::FLOOR};
-uint8_t wheelState[2] = {kobuki_msgs::WheelDropEvent::DROPPED,kobuki_msgs::WheelDropEvent::DROPPED};
+uint8_t wheelState[2] = {kobuki_msgs::WheelDropEvent::RAISED,kobuki_msgs::WheelDropEvent::RAISED};
 uint16_t cliffHeight = 0;    
 
 bool bumperPressed;
@@ -77,7 +77,7 @@ int main(int argc, char **argv)
 	//imageTransporter rgbTransport("camera/rgb/image_raw", sensor_msgs::image_encodings::BGR8); //--for turtlebot Camera
 	imageTransporter depthTransport("camera/depth_registered/image_raw", sensor_msgs::image_encodings::TYPE_32FC1);
 
-	int world_state = 3; //3 for testing cliff height
+	int world_state = 0; //3 for testing cliff height
 
 	double angular = 0.0;
 	double linear = 0.0;
@@ -115,56 +115,57 @@ int main(int argc, char **argv)
 		//check cliff sensor
 		ROS_INFO("Cliff Height: %" PRIu16, cliffHeight);
 
-		/*
-		if (cliffHeight > 50)
-		{
-			if (!cliffDetected) airTimeStart = std::chrono::system_clock::now();
-			cliffDetected = true;
-			ROS_INFO("LIFTED UP!");
-		}
-
-		else
-		{
-			if (cliffDetected) airTimeTotal = airTime;
-			cliffDetected = false;
-			airTime = 0;
-			ROS_INFO("On ground, safe to proceed...");
-		}*/
-
 		//check wheel sensor
-		bool robotRaised = false;
-		if (wheelState[0] == kobuki_msgs::WheelDropEvent::RAISED && wheelState[1]==kobuki_msgs::WheelDropEvent::RAISED) 
+		bool robotRaised;
+		if (wheelState[0] == kobuki_msgs::WheelDropEvent::DROPPED || wheelState[1]==kobuki_msgs::WheelDropEvent::DROPPED) 
 		{
+			if (!robotRaised) airTimeStart = std::chrono::system_clock::now();
 			robotRaised = true;
 			ROS_INFO("LIFTED UP!!!");
-			break;
+			
 		}
 
-		else robotRaised = false;
+		else 
+		{
+			if (robotRaised) airTimeTotal = airTime;
+			robotRaised = false;
+			airTime = 0;
+			ROS_INFO("ON GROUND...");
+			cliffHeight = 0;
+		}
 
 
 
 		//---Actions to trigger world states---
 		// DEFAULT: state 0 (follower)
 
-		// 1. lose track of person - sad...
+		// 1. lose track of person - sad... (2')
 
 			// 45 degree sweeps(slow), dramatic sad music
 
-		// 2. obstacle - surprise...!
+		// 2. obstacle - surprise...! (primary)
 		if (bumperPressed && world_state == 0) world_state = 2;
 		
 			// move back 
 			// STOP (freezing)
 
-		// 3. pick up & put down - ANGRY...
-		if (cliffDetected>0 && (airTimeTotal<maxAirTime)) world_state = 3; //total air time is less than some period
-			// wait until placed down -> 
+		// 3 & 4 - pick up, start timer
+		if (robotRaised) 
+		{
+			vel.linear.x = 0;
+			vel.angular.z = 0;
+			vel_pub.publish(vel); // stop robot
+			world_state = 3;
+		}
 
-		// 4. pick up & shake - RAGE!!!
+		// 3. pick up & put down quickly - FEAR (primary)
+		if (cliffDetected>0 && (airTimeTotal<maxAirTime)) world_state = 3; //total air time is less than some period
+			// if picked up and place down less than 10s, fear! (frozen emoji with teeth)
+
+		// 4. picked up for longer duration - RAGE!!! (2')
 		if (cliffDetected>0 && (airTimeTotal>=maxAirTime)) world_state = 4; //second time lifted up, 
 
-			// 
+			// after 10s mark, develop rage with video
 
 		if(world_state == 0)
 		{
@@ -184,11 +185,11 @@ int main(int argc, char **argv)
 		else if (world_state == 2)
 		{
 			ROS_INFO("SURPRISE!!");
-			sc.playWave(path_to_sounds + "surprise2.wav");
+			sc.playWave(path_to_sounds + "surprise1.wav");
 			ros::Duration(0.5).sleep();
 
 			vel.angular.z = 0;
-			vel.linear.x = -1.0;
+			vel.linear.x = -0.5;
 			vel_pub.publish(vel);
 			ros::spinOnce();
 			ROS_INFO("Backing up!!");
@@ -204,7 +205,7 @@ int main(int argc, char **argv)
 
 			ros::Duration(5).sleep();
 
-			break; //world_state = 0;
+			world_state = 0;
 
 
 		}
@@ -214,12 +215,12 @@ int main(int argc, char **argv)
 			ROS_INFO("Time in air: %" PRIu64, airTime);
 			ROS_INFO("Total time in air: %" PRIu64, airTimeTotal);
 
-			// if cliffHeight -wait
-			// else (on ground)
-				// music = angry music & image 
-				// 
-				
-			// exit to state 0
+			ROS_INFO("FEAR");
+			sc.playWave(path_to_sounds + "surprise1.wav");
+
+			ros::Duration(5).sleep();
+
+			world_state = 0;
 
 
 		}
@@ -229,9 +230,7 @@ int main(int argc, char **argv)
 			
 		}
 
-		cliffHeight = 0; // reset cliffHeight to 0 every loop
-
-		if (cliffDetected) airTime = std::chrono::duration_cast<std::chrono::seconds>(std::chrono::system_clock::now()-airTimeStart).count();
+		if (robotRaised) airTime = std::chrono::duration_cast<std::chrono::seconds>(std::chrono::system_clock::now()-airTimeStart).count();
 		secondsElapsed = std::chrono::duration_cast<std::chrono::seconds>(std::chrono::system_clock::now()-start).count();
 		loop_rate.sleep();
 	}
